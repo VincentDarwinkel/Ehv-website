@@ -1,0 +1,40 @@
+.event {
+  color: white;
+  padding: 20px;
+  margin: auto;
+}
+
+.event-list-group {
+  width: auto;
+  color: black;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  margin: 0 10px 10px 10px;
+  flex: 1;
+}
+
+.event-list-group:first-child,
+.event-list-group:last-child {
+  margin: 0 0 0 0;
+}
+
+.event-task-description {
+  margin-left: 2px;
+}
+
+.event-li {
+  display: flex;
+  place-items: center;
+}
+
+.event-dates-unsubscribe-btn-wrapper {
+  width: auto;
+  margin-left: auto;
+}
+
+@media only screen and (max-width: 900px) {
+  .event-list-group {
+    width: 100% !important;
+    margin: 5px 0 5px 0;
+    flex: none;
+  }
+}

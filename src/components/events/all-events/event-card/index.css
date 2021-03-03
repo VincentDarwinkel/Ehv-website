@@ -1,0 +1,16 @@
+.all-event-card {
+  color: white;
+  margin: 0 10px 10px 10px;
+}
+
+.all-event-card {
+  width: 40% !important;
+}
+
+@media only screen and (max-width: 1200px) {
+  .all-event-card {
+    flex-flow: row;
+    width: 100% !important;
+    margin: 0 0 10px 0;
+  }
+}

@@ -1,0 +1,16 @@
+.datepicker-form-expires {
+  width: auto;
+  display: inline-block;
+}
+
+#datepicker-form-wrapper {
+  min-width: 45vh;
+  width: 40%;
+  margin: auto;
+}
+
+@media only screen and (max-width: 800px) {
+  #datepicker-form-wrapper {
+    width: 98%;
+  }
+}

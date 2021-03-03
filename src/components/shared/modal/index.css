@@ -1,0 +1,76 @@
+.react-modal {
+  width: 100%;
+  height: 100%;
+  background-color: rgb(53, 59, 75, 0.7);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 500;
+  margin-top: -10px;
+  overflow: hidden;
+  animation-duration: 1s;
+  animation-fill-mode: both;
+  -webkit-animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+
+  opacity: 0;
+  animation-name: fadeIn;
+  -webkit-animation-name: fadeIn;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.react-modal-content {
+  width: 50%;
+  margin: auto;
+  background-color: rgb(53, 59, 75, 0.9);
+  border-radius: 2px;
+  margin-top: 150px;
+  text-align: center;
+  padding: 15px;
+}
+
+@media only screen and (max-width: 1000px) {
+  .react-modal-content {
+    width: 90%;
+  }
+}
+
+.react-modal-content h4 {
+  color: white;
+}
+
+.react-modal-content p {
+  color: whitesmoke;
+}
+
+.react-modal-content button {
+  width: 40%;
+}
+
+.react-modal-btn-group button {
+  display: inline-block;
+  margin: 5px;
+}
+
+.react-modal-btn-group button:hover {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}

@@ -1,0 +1,11 @@
+#empty-folder {
+  width: 100%;
+  margin: auto;
+  margin-top: 10vh;
+  text-align: center;
+}
+
+#empty-folder-icon {
+  font-size: 400%;
+  color: rgb(70, 88, 190);
+}

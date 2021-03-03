@@ -1,0 +1,10 @@
+#datepicker-availability {
+  min-width: 45vh;
+  width: 40%;
+}
+
+@media only screen and (max-width: 800px) {
+  #datepicker-availability {
+    width: 98%;
+  }
+}

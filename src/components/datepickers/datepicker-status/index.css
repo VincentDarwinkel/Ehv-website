@@ -1,0 +1,18 @@
+.datepicker-status-user-avatar {
+  border-radius: 50%;
+  width: 40px;
+}
+
+.datepicker-status-step {
+  display: flex;
+  place-items: center;
+}
+
+.datepicker-status-step button {
+  margin-top: 4px;
+}
+
+.datepicker-status-step input {
+  width: 85%;
+  display: inline-block;
+}

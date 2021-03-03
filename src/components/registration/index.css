@@ -1,0 +1,10 @@
+#registration {
+  width: 60%;
+}
+
+@media only screen and (max-width: 800px) {
+  #registration {
+    width: 98%;
+    margin: auto;
+  }
+}

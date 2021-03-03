@@ -1,0 +1,197 @@
+html,
+body {
+  background-color: rgb(51, 51, 51);
+  color: rgb(236, 226, 226);
+  height: 100%;
+  min-height: 100%;
+}
+
+.form-spinner {
+  display: none;
+  margin-left: 5px;
+  margin-bottom: 2px;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: royalblue;
+  border-color: #1861ac;
+}
+
+.Toastify__toast--default {
+  color: white !important;
+  background-color: #42547c !important;
+}
+
+hr {
+  background-color: whitesmoke;
+}
+
+.link-btn {
+  cursor: pointer;
+  background-color: Transparent;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
+  color: white;
+}
+
+@keyframes fadeInUp {
+  from {
+    transform: translate3d(0, -20px, 0);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadeInUp {
+  from {
+    transform: translate3d(0, -20px, 0);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+.fade-down {
+  animation-duration: 0.3s;
+  animation-fill-mode: both;
+  -webkit-animation-duration: 0.3s;
+  -webkit-animation-fill-mode: both;
+
+  opacity: 0;
+  animation-name: fadeInUp;
+  -webkit-animation-name: fadeInUp;
+}
+
+.content {
+  padding-top: 75px;
+  width: 98%;
+  margin: auto;
+  height: 100%;
+}
+
+.flex-row {
+  display: flex;
+  align-items: flex-start;
+  place-content: stretch;
+  flex-wrap: wrap;
+  width: 100%;
+  place-content: center;
+}
+
+.ehv-card,
+.ehv-card-no-padding {
+  background-color: rgb(59, 90, 148);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+  border-radius: 2px;
+}
+
+.ehv-card {
+  padding: 25px;
+}
+
+.ehv-card:hover {
+  text-decoration: none;
+  color: rgb(210, 210, 210);
+  transition: ease-in-out 0.3s;
+}
+
+.hover {
+  cursor: pointer;
+}
+
+.hover:hover {
+  color: gray;
+  transition: ease-in-out 0.3s;
+  transform: scale(1.01);
+}
+
+a {
+  color: white;
+  text-decoration: none;
+}
+
+a:hover {
+  color: rgb(184, 184, 184);
+  text-decoration: none;
+  transition: ease-in-out 0.3s;
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+/* change standard bootstrap */
+.btn-danger {
+  background-color: rgb(207, 74, 74) !important;
+  border-color: rgb(207, 74, 74) !important;
+}
+
+.btn,
+.form-control {
+  border-radius: 2px !important;
+}
+
+.btn:hover {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4) !important;
+  transition: ease-in-out 0.5s;
+}
+
+.btn-primary {
+  background-color: rgb(105, 110, 131) !important;
+  border-color: rgb(116, 122, 145) !important;
+}
+
+.table th {
+  color: white;
+}
+
+.table tr {
+  color: white;
+}
+
+td {
+  word-wrap: break-word;
+}
+
+.list-group-item {
+  border-radius: 2px !important;
+  color: black;
+}
+
+.list-group-item.active {
+  background-color: rgb(61, 97, 165);
+  border-color: white;
+}
+
+.list-group-item.active:hover {
+  background-color: rgb(61, 97, 165);
+  border-color: white;
+}
+
+label {
+  font-weight: normal;
+}
+
+#pageDropDown {
+  float: left;
+}
+
+.react-bootstrap-table {
+  height: 500px;
+  overflow: auto;
+}

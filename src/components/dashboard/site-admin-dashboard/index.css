@@ -1,0 +1,50 @@
+.dashboard-event-card-list-item {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 2px;
+  transition: ease-in-out 0.2s;
+  color: black;
+}
+
+.dashboard-event-card-list-item:hover {
+  transform: scale(1.01);
+}
+
+.dashboard-card,
+.site-admin-card {
+  box-shadow: 0 1px 1px rgba(185, 185, 185, 0.1);
+  border-radius: 2px;
+  margin: 2px;
+  padding: 20px;
+  text-align: center;
+  color: white;
+}
+
+.dashboard-card a:hover,
+.site-admin-card a:hover {
+  color: gray;
+  transition: ease-in-out 0.3s;
+}
+
+.dashboard-card {
+  width: 48%;
+}
+
+.site-admin-card {
+  width: 30%;
+}
+
+.site-admin-card a {
+  color: white;
+  text-decoration: none !important;
+}
+
+.site-admin-card i {
+  font-size: 250%;
+}
+
+@media only screen and (max-width: 1200px) {
+  .dashboard-card {
+    flex: 1;
+    margin: 2px 0 2px 0;
+  }
+}

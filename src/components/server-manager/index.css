@@ -1,0 +1,13 @@
+.server-manager-table-wrapper {
+  width: 98%;
+  display: flex;
+  margin: auto;
+}
+
+@media only screen and (max-width: 800px) {
+  .server-manager-table-wrapper {
+    flex-flow: row;
+    display: block;
+    margin: auto;
+  }
+}

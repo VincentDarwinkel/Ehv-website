@@ -1,0 +1,11 @@
+.custom-progress-bar {
+  text-align: center;
+  border-radius: 2px;
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+.custom-progress-bar-wrapper {
+  border-radius: 2px;
+  max-height: 25px;
+}
