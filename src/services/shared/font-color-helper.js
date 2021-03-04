@@ -1,3 +1,5 @@
+import { stringIsNullOrEmpty } from "./form-data-helper";
+
 const hexToRGB = (hex) => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : null;
@@ -6,7 +8,7 @@ const hexToRGB = (hex) => {
 export default function colorIsLight(hexColor) {
   // Counting the perceptive luminance
   // human eye favors green color...
-  if (hexColor === null || hexColor === undefined || hexColor === "") {
+  if (stringIsNullOrEmpty(hexColor)) {
     return false;
   }
 

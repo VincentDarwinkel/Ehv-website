@@ -5,12 +5,17 @@ export function getFormData(formId) {
   return object;
 }
 
-// return true if string is not null, undefined, NaN, empty, 0, false
+// return true if string is null, undefined, NaN, empty, 0, false
 export function stringIsNullOrEmpty(str) {
-  if (str) {
+  if (str && !isBlank(str)) {
     return false;
   }
   return true;
+}
+
+function isBlank(str) {
+  const chars = Array.from(str);
+  return chars.every((c) => c === " ");
 }
 
 export function createGuid() {
