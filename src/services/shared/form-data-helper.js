@@ -5,22 +5,12 @@ export function getFormData(formId) {
   return object;
 }
 
+// return true if string is not null, undefined, NaN, empty, 0, false
 export function stringIsNullOrEmpty(str) {
-  return isEmpty(str) || isBlank(str) || isBlankOrWhiteSpace(str);
-}
-
-function isEmpty(str) {
-  return !str || 0 === str.length;
-}
-
-function isBlank(str) {
-  return !str || /^\s*$/.test(str);
-}
-
-function isBlankOrWhiteSpace(params) {
-  String.prototype.isEmpty = function () {
-    return this.length === 0 || !this.trim();
-  };
+  if (str) {
+    return false;
+  }
+  return true;
 }
 
 export function createGuid() {
