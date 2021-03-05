@@ -36,4 +36,5 @@ jobs:
         env:
           DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
           DOCKERHUB_PASSWORD: ${{secrets.DOCKERHUB_PASSWORD}}
-        if: github.ref == 'refs/heads/master'
+          repository: vincentdarwinkel/ehv-website
+          tag_with_ref: true
