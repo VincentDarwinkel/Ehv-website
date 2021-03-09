@@ -80,6 +80,7 @@ export default class Datepickers extends Component {
             Verwijderen
           </Button>
           <Button
+            variant="secondary"
             onClick={() => {
               let modalOptions = this.state.modalOptions;
               modalOptions.showModal = false;

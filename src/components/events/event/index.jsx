@@ -102,7 +102,7 @@ export default class Event extends Component {
           <Button variant="danger" onClick={this.state.modalAction.onRemove}>
             Verwijderen
           </Button>
-          <Button onClick={() => this.setState({ showModal: false })} className="btn-primary">
+          <Button variant="secondary" onClick={() => this.setState({ showModal: false })}>
             Annuleren
           </Button>
         </ReactModal>
@@ -133,7 +133,7 @@ export default class Event extends Component {
                     </label>
                     <span className="event-dates-unsubscribe-btn-wrapper" hidden={!date.subscribed}>
                       <Button
-                        variant="danger"
+                        variant="primary"
                         block
                         onClick={() => {
                           this.setState({
@@ -188,8 +188,9 @@ export default class Event extends Component {
             {this.state.event?.canBeRemoved ? (
               <Suspense fallback={<div>Loading admin component</div>}>
                 <Button
+                  variant="secondary"
                   block
-                  className="btn-primary mt-4"
+                  className="mt-4"
                   onClick={() =>
                     this.setState({
                       modalAction: {

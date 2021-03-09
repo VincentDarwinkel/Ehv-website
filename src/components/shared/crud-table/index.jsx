@@ -109,7 +109,9 @@ export default class CrudTable extends Component {
           <Button variant="danger" onClick={() => this.onRemove()}>
             Verwijderen
           </Button>
-          <Button onClick={() => this.setState({ showModal: false })}>Annuleren</Button>
+          <Button variant="secondary" onClick={() => this.setState({ showModal: false })}>
+            Annuleren
+          </Button>
         </ReactModal>
         <div className="content">
           <label
