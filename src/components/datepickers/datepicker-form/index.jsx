@@ -116,7 +116,7 @@ export default class DatepickerForm extends Component {
               modalOptions.showModal = true;
               this.setState({ modalOptions });
             }}
-            variant="danger"
+            variant="primary"
             className="mb-1 ml-1"
           >
             <i className="fas fa-times" />
@@ -157,6 +157,7 @@ export default class DatepickerForm extends Component {
             Verwijderen
           </Button>
           <Button
+            variant="secondary"
             onClick={() => {
               let modalOptions = this.state.modalOptions;
               modalOptions.showModal = false;
@@ -204,12 +205,12 @@ export default class DatepickerForm extends Component {
               />
             </Form.Group>
             <Form.Group>
-              <Button type="button" onClick={() => this.addDateSelector()} variant="light" className="mt-1">
+              <Button type="button" onClick={() => this.addDateSelector()} variant="primary" className="mt-1">
                 <i className="fas fa-plus" /> Dagen Toevoegen
               </Button>
             </Form.Group>
             <div>{this.state.dateSelectors}</div>
-            <Button block type="submit" variant="secondary">
+            <Button block type="submit" variant="primary">
               {this.props.data?.uuid !== undefined ? "Aanpassen" : "Aanmaken"}
             </Button>
           </Form>

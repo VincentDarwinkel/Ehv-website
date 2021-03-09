@@ -153,7 +153,9 @@ export default class DatepickerStatus extends Component {
           <Button variant="danger" onClick={() => this.convertDatepickerToEvent()}>
             Omzetten
           </Button>
-          <Button onClick={() => this.setState({ showModal: false })}>Annuleren</Button>
+          <Button variant="secondary" onClick={() => this.setState({ showModal: false })}>
+            Annuleren
+          </Button>
         </ReactModal>
         <div className="content">
           {this.state.datepicker?.dates?.map((date) => (
@@ -210,7 +212,7 @@ export default class DatepickerStatus extends Component {
               <div className="mt-2">{this.state.steps}</div>
               <Button
                 disabled={this.state.datepicker?.uuid === undefined}
-                variant="light"
+                variant="primary"
                 onClick={() => {
                   let steps = this.state.steps;
                   const uuid = createGuid();
@@ -245,7 +247,7 @@ export default class DatepickerStatus extends Component {
               disabled={this.state.datepicker?.uuid === undefined}
               id="datepicker-status-submit-btn"
               onClick={() => this.setState({ showModal: true })}
-              variant="light"
+              variant="primary"
               block
               className="mt-3"
             >

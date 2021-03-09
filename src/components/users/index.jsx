@@ -96,7 +96,7 @@ export default class Users extends Component {
           <Button variant="danger" onClick={() => this.removeUser()}>
             Verwijderen
           </Button>
-          <Button onClick={() => this.setState({ showModal: false })} variant="primary">
+          <Button variant="secondary" onClick={() => this.setState({ showModal: false })} variant="primary">
             Annuleren
           </Button>
         </ReactModal>

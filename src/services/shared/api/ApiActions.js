@@ -1,4 +1,4 @@
-const apiUrl = "http://192.168.1.31:5000/";
+const apiUrl = "http://localhost:5000/";
 
 const user = `${apiUrl}user/`;
 const dashboard = `${apiUrl}dashboard/`;

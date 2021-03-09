@@ -11,7 +11,7 @@
 
 .dashboard-card,
 .site-admin-card {
-  box-shadow: 0 1px 1px rgba(185, 185, 185, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   border-radius: 2px;
   margin: 2px;
   padding: 20px;

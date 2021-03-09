@@ -20,7 +20,7 @@ export default class DatepickerCard extends Component {
     return (
       <Suspense fallback={<div>Loading admin component</div>}>
         <Dropdown className="all-datepicker-card-dropdown">
-          <Dropdown.Toggle variant="secondary">
+          <Dropdown.Toggle variant="primary">
             <li className="fas fa-pen" />
           </Dropdown.Toggle>
           <Dropdown.Menu>
