@@ -1,6 +1,6 @@
 html,
 body {
-  background-color: rgb(32, 32, 32);
+  background-color: rgb(28, 28, 28);
   color: rgb(236, 226, 226);
   height: 100%;
   min-height: 100%;
@@ -83,7 +83,7 @@ hr {
 
 .ehv-card,
 .ehv-card-no-padding {
-  background: rgb(39, 39, 39);
+  background-color: rgb(42, 42, 42);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   border-radius: 2px;
 }
