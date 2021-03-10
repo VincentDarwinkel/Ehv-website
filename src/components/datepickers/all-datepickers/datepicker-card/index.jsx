@@ -53,7 +53,7 @@ export default class DatepickerCard extends Component {
   };
 
   render() {
-    const accountRole = jwtClaims.accountRole;
+    const accountRole = getClaim(jwtClaims.accountRole);
     const href = accountRole === roles.Admin ? paths.EditDatepicker : paths.DatePickerAvailability;
     return (
       <div className="all-datepicker-card ehv-card">
