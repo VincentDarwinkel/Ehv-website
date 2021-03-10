@@ -79,7 +79,7 @@ export default class DatepickerAvailability extends Component {
                 </ListGroup.Item>
               ))}
             </ListGroup>
-            <Button onClick={() => this.onSubmit()} variant="light" block className="mt-2">
+            <Button onClick={() => this.onSubmit()} variant="primary" block className="mt-2">
               <i className="fas fa-cloud-upload-alt" /> Opslaan
             </Button>
           </div>

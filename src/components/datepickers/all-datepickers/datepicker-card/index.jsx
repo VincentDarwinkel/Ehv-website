@@ -53,10 +53,11 @@ export default class DatepickerCard extends Component {
   };
 
   render() {
-    const href = getClaim(jwtClaims.accountRole) === roles.Admin ? paths.EditDatepicker : paths.DatePickerAvailability;
+    const accountRole = getClaim(jwtClaims.accountRole);
+    const href = accountRole === roles.Admin ? paths.EditDatepicker : paths.DatePickerAvailability;
     return (
       <div className="all-datepicker-card ehv-card">
-        {this.props.data?.canBeRemoved ? this.getDropDownMenu() : null}
+        {this.props.data?.canBeRemoved && accountRole === roles.Admin ? this.getDropDownMenu() : null}
         <a href={href + "#/" + this.props.data.uuid}>
           <div>
             <h5>{this.props.data.title}</h5>
