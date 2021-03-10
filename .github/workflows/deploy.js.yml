@@ -10,12 +10,6 @@ on:
       - "closed"
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    env:
-      CI: true
-
   push_to_registry:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
