@@ -175,7 +175,7 @@ export default class Registration extends Component {
             <Form.Group controlId="registration-terms-and-conditions">
               <Form.Check required id="registration-terms-and-conditions" type="checkbox" label="Ik accepteer de algemene voorwaarden" />
             </Form.Group>
-            <Button block variant="light" type="submit" id="registration-submit-btn">
+            <Button block type="submit" id="registration-submit-btn">
               Registreren
               <span className="spinner-border spinner-border-sm form-spinner" id="registration-spinner" role="status" />
             </Button>
