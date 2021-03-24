@@ -12,6 +12,7 @@ import AppDashboard from "components/app-dashboard";
 import Users from "components/users/";
 import { getClaim } from "services/jwt";
 import jwtClaims from "services/shared/jwt-claims";
+import Gallery from "components/gallery";
 
 function getSiteAdminRoutes() {
   return (
@@ -120,6 +121,7 @@ function routes() {
       <Route exact path={routerPaths.Login} component={Login} />
       <Route exact path={routerPaths.Registration} component={Registration} />
       <Route exact path={routerPaths.RegistrationSuccess} component={RegistrationSuccess} />
+      <Route exact path={routerPaths.Gallery} component={Gallery} />
       <ProtectedRoute
         roles={[accountRoles.User, accountRoles.Admin, accountRoles.SiteAdmin]}
         exact

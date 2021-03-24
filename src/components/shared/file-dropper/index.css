@@ -1,0 +1,51 @@
+#file-dropper {
+  width: 95%;
+  margin: auto;
+}
+
+#selected-files {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.selected-file {
+  height: auto;
+  width: 100%;
+  min-width: 40vh;
+  margin: 2px;
+}
+
+.selected-file input {
+  position: absolute;
+  margin: auto;
+  width: fit-content;
+  margin-left: 15px;
+  height: inherit;
+}
+
+.selected-file img {
+  height: inherit;
+  width: 12%;
+  max-width: 150px;
+  image-rendering: pixelated;
+}
+
+.selected-file video {
+  height: inherit;
+  width: 12%;
+  image-rendering: pixelated;
+}
+
+.fd-remove {
+  float: right;
+}
+
+@media only screen and (max-width: 900px) {
+  #selected-files {
+    display: block;
+  }
+
+  .selected-file {
+    width: 100%;
+  }
+}
