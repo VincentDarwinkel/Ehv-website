@@ -9,25 +9,27 @@
 }
 
 .selected-file {
+  display: flex;
   height: auto;
   width: 100%;
   min-width: 40vh;
   margin: 2px;
 }
 
-.selected-file input {
-  position: absolute;
-  margin: auto;
-  width: fit-content;
-  margin-left: 15px;
-  height: inherit;
+.selected-file button {
+  height: 35px;
+  margin-left: auto;
+}
+
+.fd-option-wrapper {
+  display: inline-block;
+  margin-left: 5px;
 }
 
 .selected-file img {
   height: inherit;
   width: 12%;
   max-width: 150px;
-  image-rendering: pixelated;
 }
 
 .selected-file video {
@@ -40,12 +42,9 @@
   float: right;
 }
 
-@media only screen and (max-width: 900px) {
-  #selected-files {
-    display: block;
-  }
-
-  .selected-file {
-    width: 100%;
-  }
+#fd-upload-section {
+  height: 100%;
+  width: 100%;
+  position: sticky;
+  bottom: 0;
 }

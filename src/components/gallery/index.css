@@ -1,0 +1,16 @@
+#gallery {
+  width: 95%;
+  margin: auto;
+  margin-top: 25px;
+}
+
+.directory-card {
+  width: 40vh;
+  text-align: center;
+  cursor: pointer;
+}
+
+.directory-card i {
+  float: left;
+  font-size: 140%;
+}

@@ -1,4 +1,5 @@
 const apiUrl = "http://localhost:5000/";
+const fileApi = "http://192.168.1.31:5001/";
 
 const user = `${apiUrl}user/`;
 const dashboard = `${apiUrl}dashboard/`;
@@ -12,6 +13,8 @@ const hobby = `${apiUrl}hobby/`;
 const artist = `${apiUrl}artist/`;
 const datePicker = `${apiUrl}datepicker/`;
 const datepickerAvailability = `${apiUrl}datepicker/availability/`;
+const fileApiFiles = `${fileApi}file`; // this path should not end with an / since parameters are send
+const fileApiDirectory = `${fileApi}directory`; // this path should not end with an / since parameters are send
 
 // All paths need to end with a '/'
 
@@ -34,6 +37,8 @@ const actions = {
   Log: log,
   Datepicker: datePicker,
   DatepickerAvailability: datepickerAvailability,
+  FileApiFiles: fileApiFiles,
+  FileApiDirectory: fileApiDirectory,
 };
 
 export default actions;

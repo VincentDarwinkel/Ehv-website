@@ -5,6 +5,7 @@ function getUserFriendlyMessage(statusCode) {
     304: "Niet aangepast, de aanvraag is niet uitgevoerd",
     401: "Niet gemachtigd, de server heeft uw aanvraag niet geaccepteerd",
     404: "Het aangevraagde item kon niet worden gevonden",
+    422: "Aanvraag kon niet worden verwerkt door de server",
     429: "Teveel aanvragen per seconden",
     500: "Er is iets fout gegaan op de server, probeer het later opnieuw",
     undefined: "Server niet bereikbaar, probeer het later opnieuw",
