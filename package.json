@@ -26,6 +26,7 @@
     "react-player": "^2.9.0",
     "react-router-dom": "*",
     "react-scripts": "*",
+    "react-swipeable": "^6.1.0",
     "react-toastify": "*",
     "react-tooltip": "*",
     "simple-console-logger": "*",

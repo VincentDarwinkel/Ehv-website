@@ -39,6 +39,7 @@ const actions = {
   DatepickerAvailability: datepickerAvailability,
   FileApiFiles: fileApiFiles,
   FileApiDirectory: fileApiDirectory,
+  FileApiDirectoryInfo: `${fileApiDirectory}/info`,
 };
 
 export default actions;

@@ -7,8 +7,8 @@ import "./index.css";
 import { isMobile } from "react-device-detect";
 
 export default class FileDropper extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       selectedFiles: [],
       imagesToUpload: [],
@@ -29,6 +29,7 @@ export default class FileDropper extends Component {
         statuses.push("Upload voltooid");
       }
 
+      this.props.onUploadComplete();
       this.setState({ selectedFiles: [], imagesToUpload: [], uploadedFilesCount: 0, statuses });
     }
   };
@@ -93,7 +94,7 @@ export default class FileDropper extends Component {
         formData.append("files", file);
       });
 
-      const result = await uploadFiles(formData, "?path=/public/gallery/");
+      const result = await uploadFiles(formData, `?path=${this.props.currentDirectory}`);
       if (result.status === 200) {
         statuses.push("Afbeeldingen geüpload");
       } else {
@@ -157,7 +158,7 @@ export default class FileDropper extends Component {
       selectedVideos.forEach((video) => formData.append("files", video));
 
       let statuses = this.state.statuses;
-      const result = await uploadFiles(formData, "?path=/public/gallery/");
+      const result = await uploadFiles(formData, `?path=${this.props.currentDirectory}`);
       if (result.status === 200) {
         statuses.push("Video's geüpload");
       } else {
