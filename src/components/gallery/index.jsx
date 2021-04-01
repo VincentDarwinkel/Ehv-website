@@ -4,9 +4,10 @@ import Header from "components/shared/header";
 import FileDropper from "components/shared/file-dropper";
 import { GetFile, GetFileNamesFromDirectory, GetDirectoryInfo, RemoveFile } from "services/gallery";
 import ReactPlayer from "react-player";
-import { Button } from "react-bootstrap";
+import { Button, Dropdown } from "react-bootstrap";
 import ReactModal from "components/shared/modal";
 import EmptyFolder from "components/shared/empty-folder";
+import DirectoryCreator from "components/shared/directory-creator";
 
 export default class Gallery extends Component {
   constructor() {
@@ -22,6 +23,8 @@ export default class Gallery extends Component {
       yDown: null,
       showModal: false,
       modalAction: null,
+      showedOption: null,
+      directoryContainsFiles: false,
     };
   }
 
@@ -74,6 +77,8 @@ export default class Gallery extends Component {
   };
 
   getDirectoryData = async () => {
+    this.setState({ directoryContainsFiles: false });
+
     const filesResponse = await GetFileNamesFromDirectory(this.state.currentDirectory);
     const directoryInfoResponse = await GetDirectoryInfo(this.state.currentDirectory);
 
@@ -157,6 +162,12 @@ export default class Gallery extends Component {
   };
 
   generateFileCard = (file, type, fileName) => {
+    let { directoryContainsFiles } = this.props;
+    if (!directoryContainsFiles) {
+      directoryContainsFiles = true;
+      this.setState({ directoryContainsFiles });
+    }
+
     if (type === "image") {
       file.blob().then((value) => {
         this.renderImageCard(value, fileName);
@@ -263,9 +274,32 @@ export default class Gallery extends Component {
               Annuleren
             </Button>
           </ReactModal>
-          <div hidden={this.state.fileViewer !== null}>
-            <FileDropper onUploadComplete={() => this.getDirectoryData()} currentDirectory={this.state.currentDirectory} />
+          <div id="gallery-options" hidden={this.state.fileViewer !== null}>
+            <Dropdown className="mb-2">
+              <Dropdown.Toggle variant="primary">
+                Acties <li className="fas fa-pen" />
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={() => this.setState({ showedOption: "fileDropper" })}>
+                  <i className="fas fa-photo-video" /> Bestanden uploaden
+                </Dropdown.Item>
+                {!this.state.directoryContainsFiles ? (
+                  <Dropdown.Item onClick={() => this.setState({ showedOption: "directoryCreator" })}>
+                    <i className="fas fa-folder-plus" /> Map aanmaken
+                  </Dropdown.Item>
+                ) : null}
+              </Dropdown.Menu>
+            </Dropdown>
           </div>
+          <FileDropper
+            hidden={this.state.showedOption !== "fileDropper"}
+            onUploadComplete={() => this.getDirectoryData()}
+            currentDirectory={this.state.currentDirectory}
+          />
+          <DirectoryCreator
+            currentDirectory={this.state.currentDirectory}
+            hidden={this.state.showedOption !== "directoryCreator" || this.state.directoryContainsFiles}
+          />
           <div tabIndex="0" onKeyUp={(e) => this.onKeyDown(e)} id="gallery" className="flex-row">
             {this.state.galleryCards}
           </div>

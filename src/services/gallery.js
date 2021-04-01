@@ -7,7 +7,7 @@ export const GetFileNamesFromDirectory = async (path) => {
 };
 
 export const GetDirectoryInfo = async (path) => {
-  return await sendRequest(() => Get(`${ApiActions.FileApiDirectoryInfo}?path=${path}`));
+  return await sendRequest(() => Get(`${ApiActions.FileApiDirectoryInfo}?path=${path}`), [404, 422]);
 };
 
 export const GetFile = async (uuid) => {

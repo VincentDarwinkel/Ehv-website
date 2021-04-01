@@ -11,7 +11,7 @@ Logger.configure({ level: "debug" });
 function App() {
   return (
     <div className="App">
-      <ToastContainer autoClose={6000} position="top-center" />
+      <ToastContainer autoClose={4000} position="top-center" />
       <Routes />
     </div>
   );

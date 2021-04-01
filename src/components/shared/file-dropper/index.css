@@ -1,18 +1,13 @@
 #file-dropper {
-  width: 95%;
-  margin: auto;
+  width: fit-content;
 }
 
 #selected-files {
-  display: flex;
-  flex-wrap: wrap;
+  min-width: 100%;
 }
 
 .selected-file {
   display: flex;
-  height: auto;
-  width: 100%;
-  min-width: 40vh;
   margin: 2px;
 }
 
@@ -28,12 +23,14 @@
 
 .selected-file img {
   height: inherit;
+  max-height: 150px;
   width: 12%;
   max-width: 150px;
 }
 
 .selected-file video {
   height: inherit;
+  max-height: 150px;
   width: 12%;
   image-rendering: pixelated;
 }

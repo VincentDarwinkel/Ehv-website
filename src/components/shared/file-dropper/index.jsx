@@ -184,7 +184,7 @@ export default class FileDropper extends Component {
 
   render() {
     return (
-      <div id="file-dropper">
+      <div id="file-dropper" hidden={this.props.hidden}>
         <label className="btn btn-light">
           Bestanden kiezen <i className="fas fa-photo-video" />
           <Form.Control
