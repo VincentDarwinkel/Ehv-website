@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import "./index.css";
 import Header from "components/shared/header";
 import FileDropper from "components/shared/file-dropper";
-import { GetFile, GetFileNamesFromDirectory, GetDirectoryInfo, RemoveFile } from "services/gallery";
+import { GetFile, GetFileNamesFromDirectory, GetDirectoryInfo, RemoveFile, RemoveDirectory } from "services/gallery";
 import ReactPlayer from "react-player";
 import { Button, Dropdown } from "react-bootstrap";
 import ReactModal from "components/shared/modal";
@@ -17,6 +17,7 @@ export default class Gallery extends Component {
       currentItems: [],
       galleryCards: [],
       filesOwnedByUser: [],
+      foldersOwnedByUser: [],
       fileViewer: null,
       hideVideoView: true,
       xDown: null,
@@ -24,7 +25,8 @@ export default class Gallery extends Component {
       showModal: false,
       modalAction: null,
       showedOption: null,
-      directoryContainsFiles: false,
+      directoryContainsFile: false,
+      directoryContainsFolder: false,
     };
   }
 
@@ -77,7 +79,7 @@ export default class Gallery extends Component {
   };
 
   getDirectoryData = async () => {
-    this.setState({ directoryContainsFiles: false });
+    this.setState({ directoryContainsFile: false, directoryContainsFolder: false });
 
     const filesResponse = await GetFileNamesFromDirectory(this.state.currentDirectory);
     const directoryInfoResponse = await GetDirectoryInfo(this.state.currentDirectory);
@@ -86,7 +88,10 @@ export default class Gallery extends Component {
       const items = await filesResponse.json();
       const directoryInfo = await directoryInfoResponse.json();
 
-      this.setState({ currentItems: items, filesOwnedByUser: directoryInfo.filesOwnedByUser }, this.renderGalleryData);
+      this.setState(
+        { currentItems: items, filesOwnedByUser: directoryInfo.filesOwnedByUser, foldersOwnedByUser: directoryInfo.directoriesOwnedByUser },
+        this.renderGalleryData
+      );
     }
   };
 
@@ -95,7 +100,7 @@ export default class Gallery extends Component {
     const url = URL.createObjectURL(image);
     galleryCards.push(
       <div key={url} className="ehv-card-no-padding">
-        <img onClick={() => this.setState({ fileViewer: url })} src={url} />
+        <img alt="gallery" onClick={() => this.setState({ fileViewer: url })} src={url} />
         {this.state.currentItems.some((item) => item.includes(fileUuid)) ? (
           <Button onClick={() => this.setState({ modalAction: () => this.removeItem(fileUuid, url), showModal: true })} block>
             Verwijderen
@@ -147,13 +152,32 @@ export default class Gallery extends Component {
     this.setState({ currentDirectory, currentItems: [], galleryCards: [] }, this.getDirectoryData);
   };
 
+  onDirectoryRemove = async (directoryName) => {
+    const result = await RemoveDirectory(this.state.currentDirectory + directoryName);
+    if (result.status === 200) {
+      let { currentItems, galleryCards } = this.state;
+      currentItems = currentItems.filter((ci) => ci !== directoryName);
+      galleryCards = galleryCards.filter((gc) => gc.key !== directoryName);
+
+      this.setState({ currentItems, galleryCards });
+    }
+  };
+
   generateDirectoryCards = (directories) => {
+    this.setState({ directoryContainsFolder: true });
     let directoryCards = [];
     directories.forEach((directoryName) => {
       directoryCards.push(
-        <div key={directoryName} onClick={() => this.onDirectoryCardClick(directoryName)} className="ehv-card directory-card">
-          <i className="fas fa-folder" />
-          <h5>{directoryName}</h5>
+        <div key={directoryName}>
+          <div onClick={() => this.onDirectoryCardClick(directoryName)} className="ehv-card directory-card">
+            <i className="fas fa-folder" />
+            <h5>{directoryName}</h5>
+          </div>
+          {this.state.foldersOwnedByUser?.some((folderName) => folderName === directoryName) ? (
+            <Button onClick={() => this.onDirectoryRemove(directoryName)} block>
+              Verwijderen
+            </Button>
+          ) : null}
         </div>
       );
     });
@@ -162,10 +186,10 @@ export default class Gallery extends Component {
   };
 
   generateFileCard = (file, type, fileName) => {
-    let { directoryContainsFiles } = this.props;
-    if (!directoryContainsFiles) {
-      directoryContainsFiles = true;
-      this.setState({ directoryContainsFiles });
+    let { directoryContainsFile } = this.props;
+    if (!directoryContainsFile) {
+      directoryContainsFile = true;
+      this.setState({ directoryContainsFile });
     }
 
     if (type === "image") {
@@ -256,6 +280,14 @@ export default class Gallery extends Component {
     }
   };
 
+  loadPreviousDirectory = () => {
+    let { currentDirectory } = this.state;
+    const folders = currentDirectory.split("/").filter((f) => f !== "");
+    currentDirectory = currentDirectory.replace(`${folders[folders.length - 1]}/`, "");
+
+    this.setState({ currentDirectory }, this.getDirectoryData);
+  };
+
   render() {
     return (
       <div>
@@ -274,22 +306,32 @@ export default class Gallery extends Component {
               Annuleren
             </Button>
           </ReactModal>
-          <div id="gallery-options" hidden={this.state.fileViewer !== null}>
-            <Dropdown className="mb-2">
+          <div id="gallery-options" className="mb-2" hidden={this.state.fileViewer !== null}>
+            <Dropdown>
               <Dropdown.Toggle variant="primary">
                 Acties <li className="fas fa-pen" />
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item onClick={() => this.setState({ showedOption: "fileDropper" })}>
-                  <i className="fas fa-photo-video" /> Bestanden uploaden
+                <Dropdown.Item onClick={() => this.setState({ showedOption: null })}>
+                  <i className="far fa-eye-slash" /> Opties verbergen
                 </Dropdown.Item>
-                {!this.state.directoryContainsFiles ? (
+                {!this.state.directoryContainsFolder ? (
+                  <Dropdown.Item onClick={() => this.setState({ showedOption: "fileDropper" })}>
+                    <i className="fas fa-photo-video" /> Bestanden uploaden
+                  </Dropdown.Item>
+                ) : null}
+
+                {!this.state.directoryContainsFile ? (
                   <Dropdown.Item onClick={() => this.setState({ showedOption: "directoryCreator" })}>
                     <i className="fas fa-folder-plus" /> Map aanmaken
                   </Dropdown.Item>
                 ) : null}
               </Dropdown.Menu>
             </Dropdown>
+            <br />
+            <Button onClick={this.loadPreviousDirectory} disabled={this.state.currentDirectory === "/public/gallery/"}>
+              <i className="fas fa-arrow-left" />
+            </Button>
           </div>
           <FileDropper
             hidden={this.state.showedOption !== "fileDropper"}
@@ -297,8 +339,9 @@ export default class Gallery extends Component {
             currentDirectory={this.state.currentDirectory}
           />
           <DirectoryCreator
+            callback={() => this.getDirectoryData()}
             currentDirectory={this.state.currentDirectory}
-            hidden={this.state.showedOption !== "directoryCreator" || this.state.directoryContainsFiles}
+            hidden={this.state.showedOption !== "directoryCreator" || this.state.directoryContainsFile}
           />
           <div tabIndex="0" onKeyUp={(e) => this.onKeyDown(e)} id="gallery" className="flex-row">
             {this.state.galleryCards}
@@ -312,7 +355,7 @@ export default class Gallery extends Component {
             hidden={this.state.fileViewer === null}
             id="image-viewer"
           >
-            <img hidden={!this.state.hideVideoView} src={this.state.fileViewer} />
+            <img alt="preview" hidden={!this.state.hideVideoView} src={this.state.fileViewer} />
             <div hidden={this.state.hideVideoView} className="ehv-card-no-padding">
               <ReactPlayer
                 playing={true}

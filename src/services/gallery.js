@@ -14,6 +14,10 @@ export const GetFile = async (uuid) => {
   return await sendRequest(() => Get(`${ApiActions.FileApiFiles}/${uuid}`));
 };
 
+export const RemoveDirectory = async (path) => {
+  return await sendRequest(() => Delete(`${ApiActions.FileApiDirectory}?path=${path}`));
+};
+
 export const RemoveFile = async (uuid) => {
   return await sendRequest(() => Delete(`${ApiActions.FileApiFiles}?uuid=${uuid}`));
 };

@@ -15,7 +15,7 @@ export default class DirectoryCreator extends Component {
       toast.error("Naam mag niet leeg zijn");
       return;
     }
-    if (!value.match("[A-Za-z0-9]")) {
+    if (!value.match("[a-zA-Z0-9]")) {
       toast.error("Naam mag alleen letters en nummers bevatten");
       return;
     }
@@ -24,13 +24,17 @@ export default class DirectoryCreator extends Component {
     formData.append("name", value);
     formData.append("parentPath", this.props.currentDirectory);
 
-    await CreateDirectory(formData);
+    const result = await CreateDirectory(formData);
+    if (result.status === 200) {
+      this.props.callback();
+      document.getElementById("dc-input").value = "";
+    }
   };
 
   render() {
     return (
       <div id="directory-creator" hidden={this.props.hidden}>
-        <Form.Control onKeyUp={this.onSubmit} placeholder="Druk enter om aan te maken" />
+        <Form.Control onKeyUp={this.onSubmit} id="dc-input" placeholder="Druk enter om aan te maken" />
       </div>
     );
   }
