@@ -12,7 +12,7 @@
     "jquery": "*",
     "prettier-eslint": "*",
     "react": "*",
-    "react-bootstrap": "*",
+    "react-bootstrap": "1.5.2",
     "react-bootstrap-table-next": "*",
     "react-bootstrap-table2-editor": "*",
     "react-bootstrap-table2-filter": "*",
