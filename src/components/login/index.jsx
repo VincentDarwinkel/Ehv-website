@@ -66,7 +66,7 @@ export default class Login extends Component {
               </Form.Control>
               <Form.Control name="loginCode" type="number" min="99999" max="999999" placeholder="Login code (kijk email)" />
             </Form.Group>
-            <Button block type="submit" className="btn btn-primary" id="login-submit-btn">
+            <Button block type="submit" variant="secondary" id="login-submit-btn">
               Login
               <span className="spinner-border spinner-border-sm form-spinner" id="login-spinner" role="status" />
             </Button>

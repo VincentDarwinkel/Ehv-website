@@ -1,4 +1,5 @@
 import Cookies from "universal-cookie";
+
 export const Get = async (action) => {
   try {
     const response = await fetch(action, {
@@ -7,7 +8,6 @@ export const Get = async (action) => {
       cache: "no-cache",
       credentials: "same-origin",
       headers: {
-        "Content-Type": "application/json",
         Jwt: new Cookies().get("Jwt")?.jwt,
       },
 
@@ -21,7 +21,7 @@ export const Get = async (action) => {
   }
 };
 
-export const Post = async (action, json = null) => {
+export const Post = async (action, data = null) => {
   try {
     const response = await fetch(action, {
       method: "POST",
@@ -29,13 +29,12 @@ export const Post = async (action, json = null) => {
       cache: "no-cache",
       credentials: "same-origin",
       headers: {
-        "Content-Type": "application/json",
         Jwt: new Cookies().get("Jwt")?.jwt,
       },
 
       redirect: "follow",
       referrerPolicy: "no-referrer",
-      body: JSON.stringify(json),
+      body: data,
     });
 
     return response;
@@ -44,7 +43,7 @@ export const Post = async (action, json = null) => {
   }
 };
 
-export const Put = async (action, json = null) => {
+export const Put = async (action, data = null) => {
   try {
     const response = await fetch(action, {
       method: "PUT",
@@ -52,13 +51,12 @@ export const Put = async (action, json = null) => {
       cache: "no-cache",
       credentials: "same-origin",
       headers: {
-        "Content-Type": "application/json",
         Jwt: new Cookies().get("Jwt")?.jwt,
       },
 
       redirect: "follow",
       referrerPolicy: "no-referrer",
-      body: JSON.stringify(json),
+      body: data,
     });
 
     return response;
@@ -67,7 +65,7 @@ export const Put = async (action, json = null) => {
   }
 };
 
-export const Delete = async (action, json = null) => {
+export const Delete = async (action, data = null) => {
   try {
     const response = await fetch(action, {
       method: "DELETE",
@@ -75,13 +73,12 @@ export const Delete = async (action, json = null) => {
       cache: "no-cache",
       credentials: "same-origin",
       headers: {
-        "Content-Type": "application/json",
         Jwt: new Cookies().get("Jwt")?.jwt,
       },
 
       redirect: "follow",
       referrerPolicy: "no-referrer",
-      body: JSON.stringify(json),
+      body: data,
     });
 
     return response;
