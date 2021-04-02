@@ -312,9 +312,12 @@ export default class Gallery extends Component {
                 Acties <li className="fas fa-pen" />
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item onClick={() => this.setState({ showedOption: null })}>
-                  <i className="far fa-eye-slash" /> Opties verbergen
-                </Dropdown.Item>
+                {this.state.showedOption !== null ? (
+                  <Dropdown.Item onClick={() => this.setState({ showedOption: null })}>
+                    <i className="far fa-eye-slash" /> Opties verbergen
+                  </Dropdown.Item>
+                ) : null}
+
                 {!this.state.directoryContainsFolder ? (
                   <Dropdown.Item onClick={() => this.setState({ showedOption: "fileDropper" })}>
                     <i className="fas fa-photo-video" /> Bestanden uploaden
