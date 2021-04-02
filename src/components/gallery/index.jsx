@@ -92,8 +92,8 @@ export default class Gallery extends Component {
       this.setState(
         {
           currentItems: items,
-          filesOwnedByUser: directoryInfo.filesOwnedByUser,
-          foldersOwnedByUser: directoryInfo.directoryContentInfo.find((dci) => dci.ownerUuid === uuid).directoriesOwnedByUser,
+          filesOwnedByUser: directoryInfo?.filesOwnedByUser,
+          foldersOwnedByUser: directoryInfo?.directoryContentInfo?.find((dci) => dci.ownerUuid === uuid)?.directoriesOwnedByUser,
         },
         this.renderGalleryData
       );
