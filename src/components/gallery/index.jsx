@@ -88,8 +88,13 @@ export default class Gallery extends Component {
       const items = await filesResponse.json();
       const directoryInfo = await directoryInfoResponse.json();
 
+      const uuid = "091f31ae-a4e5-41b1-bb86-48dbfe40b839"; // TODO remove this temp variable
       this.setState(
-        { currentItems: items, filesOwnedByUser: directoryInfo.filesOwnedByUser, foldersOwnedByUser: directoryInfo.directoriesOwnedByUser },
+        {
+          currentItems: items,
+          filesOwnedByUser: directoryInfo.filesOwnedByUser,
+          foldersOwnedByUser: directoryInfo.directoryContentInfo.find((dci) => dci.ownerUuid === uuid).directoriesOwnedByUser,
+        },
         this.renderGalleryData
       );
     }
