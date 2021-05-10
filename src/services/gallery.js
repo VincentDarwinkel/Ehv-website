@@ -11,7 +11,7 @@ export const GetDirectoryInfo = async (path) => {
 };
 
 export const GetFile = async (uuid) => {
-  return await sendRequest(() => Get(`${ApiActions.FileApiFiles}/${uuid}`));
+  return await sendRequest(() => Get(`${ApiActions.FileApiFiles}?uuid=${uuid}`));
 };
 
 export const RemoveDirectory = async (path) => {
