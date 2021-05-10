@@ -28,7 +28,7 @@
     "react-scripts": "*",
     "react-swipeable": "^6.1.0",
     "react-toastify": "*",
-    "react-tooltip": "*",
+    "react-tooltip": "4.2.17",
     "simple-console-logger": "*",
     "universal-cookie": "*"
   },
