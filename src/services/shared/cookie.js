@@ -10,5 +10,7 @@ export function setAuthorizationCookie(authorizationTokes) {
     path: "/",
     expires: expirationDate,
     sameSite: true,
+    httpOnly: true,
+    secure: true,
   });
 }
