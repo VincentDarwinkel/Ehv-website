@@ -1,20 +1,20 @@
-const apiUrl = "http://localhost:5000/";
-const fileApi = "http://192.168.1.31:5001/";
+const gatewayUrl = "http://localhost:5000/";
+const fileApiUrl = `${gatewayUrl}api/file/`;
 
-const user = `${apiUrl}user/`;
-const dashboard = `${apiUrl}dashboard/`;
-const event = `${apiUrl}event/`;
-const eventStep = `${apiUrl}event/step/`;
-const eventStepUser = `${apiUrl}event/step/user/`;
-const eventDateUser = `${apiUrl}event/date/user/`;
-const log = `${apiUrl}log/`;
-const eventDate = `${apiUrl}event/date/`;
-const hobby = `${apiUrl}hobby/`;
-const artist = `${apiUrl}artist/`;
-const datePicker = `${apiUrl}datepicker/`;
-const datepickerAvailability = `${apiUrl}datepicker/availability/`;
-const fileApiFiles = `${fileApi}file`; // this path should not end with an / since parameters are send
-const fileApiDirectory = `${fileApi}directory`; // this path should not end with an / since parameters are send
+const user = `${gatewayUrl}user/`;
+const dashboard = `${gatewayUrl}dashboard/`;
+const event = `${gatewayUrl}event/`;
+const eventStep = `${gatewayUrl}event/step/`;
+const eventStepUser = `${gatewayUrl}event/step/user/`;
+const eventDateUser = `${gatewayUrl}event/date/user/`;
+const log = `${gatewayUrl}log/`;
+const eventDate = `${gatewayUrl}event/date/`;
+const hobby = `${gatewayUrl}hobby/`;
+const artist = `${gatewayUrl}artist/`;
+const datePicker = `${gatewayUrl}datepicker/`;
+const datepickerAvailability = `${gatewayUrl}datepicker/availability/`;
+const fileApiFiles = `${fileApiUrl}file`; // this path should not end with an / since parameters are send
+const fileApiDirectory = `${fileApiUrl}directory`; // this path should not end with an / since parameters are send
 
 // All paths need to end with a '/'
 
