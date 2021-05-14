@@ -27,7 +27,7 @@
     "react-router-dom": "*",
     "react-scripts": "*",
     "react-swipeable": "^6.1.0",
-    "react-toastify": "*",
+    "react-toastify": "7.0.4",
     "react-tooltip": "4.2.17",
     "simple-console-logger": "*",
     "universal-cookie": "*"
