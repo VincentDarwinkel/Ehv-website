@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Redirect, Route } from "react-router-dom";
+import { BrowserRouter, Redirect, Route } from "react-router-dom";
 import React, { Suspense } from "react";
 import routerPaths from "services/shared/router-paths";
 import accountRoles from "services/shared/account-role";
@@ -40,6 +40,7 @@ function getAdminRoutes() {
           path={routerPaths.Events}
           component={React.lazy(() => import("components/events/all-events"))}
         />
+        <ProtectedRoute roles={[accountRoles.Admin]} exact path={routerPaths.Account} component={React.lazy(() => import("components/account"))} />
         <ProtectedRoute roles={[accountRoles.Admin]} exact path={routerPaths.Event} component={React.lazy(() => import("components/events/event"))} />
         <ProtectedRoute
           roles={[accountRoles.Admin]}
@@ -80,6 +81,7 @@ function getUserRoutes() {
           path={routerPaths.Events}
           component={React.lazy(() => import("components/events/all-events"))}
         />
+        <ProtectedRoute roles={[accountRoles.User]} exact path={routerPaths.Account} component={React.lazy(() => import("components/account"))} />
         <ProtectedRoute roles={[accountRoles.User]} exact path={routerPaths.Event} component={React.lazy(() => import("components/events/event"))} />
         <ProtectedRoute
           roles={[accountRoles.User]}
@@ -114,14 +116,14 @@ const accountRole = getClaim(jwtClaims.accountRole);
 
 function routes() {
   return (
-    <Router>
+    <BrowserRouter>
       <Route exact path={routerPaths.Root}>
         <Redirect to={routerPaths.Login} />
       </Route>
       <Route exact path={routerPaths.Login} component={Login} />
       <Route exact path={routerPaths.Registration} component={Registration} />
       <Route exact path={routerPaths.RegistrationSuccess} component={RegistrationSuccess} />
-      <Route exact path={routerPaths.Gallery} component={Gallery} />
+      <ProtectedRoute roles={[accountRoles.User, accountRoles.Admin, accountRoles.SiteAdmin]} exact path={routerPaths.Gallery} component={Gallery} />
       <ProtectedRoute
         roles={[accountRoles.User, accountRoles.Admin, accountRoles.SiteAdmin]}
         exact
@@ -139,7 +141,7 @@ function routes() {
         component={AppDashboard}
       />
       <ProtectedRoute roles={[accountRoles.User, accountRoles.Admin, accountRoles.SiteAdmin]} exact path={routerPaths.Users} component={Users} />
-    </Router>
+    </BrowserRouter>
   );
 }
 

@@ -3,25 +3,25 @@ import { Delete, Get, Post, Put } from "./shared/api/Api";
 import { sendRequest } from "./shared/api/api-middleware";
 
 export const addDatepicker = async (json) => {
-  return await sendRequest(() => Post(ApiActions.Datepicker, json), [409]);
+  return sendRequest(() => Post(ApiActions.Datepicker, json), [409]);
 };
 
-export const saveAvailability = async (json, uuid) => {
-  return await sendRequest(() => Post(ApiActions.DatepickerAvailability + uuid, json));
+export const saveAvailability = async (data) => {
+  return sendRequest(() => Post(ApiActions.DatepickerAvailability, data));
 };
 
 export const editDatepicker = async (json) => {
-  return await sendRequest(() => Put(ApiActions.Datepicker, json));
+  return sendRequest(() => Put(ApiActions.Datepicker, json));
 };
 
 export const getDatepickers = async () => {
-  return await sendRequest(() => Get(ApiActions.Datepicker));
+  return sendRequest(() => Get(ApiActions.Datepicker));
 };
 
 export const getDatepicker = async (uuid) => {
-  return await sendRequest(() => Get(ApiActions.Datepicker + uuid));
+  return sendRequest(() => Get(`${ApiActions.Datepicker}/${uuid}`));
 };
 
 export const deleteDatepicker = async (uuid) => {
-  return await sendRequest(() => Delete(ApiActions.Datepicker + uuid));
+  return sendRequest(() => Delete(`${ApiActions.Datepicker}?uuid=${uuid}`));
 };

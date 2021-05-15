@@ -34,7 +34,7 @@ export default class UserCard extends Component {
           <p>
             &bull; Leeftijd: {this.props.age}
             <br />
-            &bull; Verjaardag: {this.props.birthdate}
+            &bull; Verjaardag: {this.props.birthDate}
             <br />
           </p>
         </div>

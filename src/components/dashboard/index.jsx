@@ -1,13 +1,13 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, Component } from "react";
 import "./index.css";
 import EventCard from "./event-card";
-import { Component } from "react";
-import { GetDashboardInfo } from "services/dashboard/";
 import { dateTodayString } from "services/shared/time-helper";
 import Header from "components/shared/header";
 import { getClaim } from "services/jwt";
 import jwtClaims from "services/shared/jwt-claims";
 import accountRoles from "services/shared/account-role";
+import { GetAllEvents } from "services/events";
+import roles from "services/shared/account-role";
 
 export default class Dashboard extends Component {
   constructor() {
@@ -23,41 +23,76 @@ export default class Dashboard extends Component {
     };
   }
 
-  async componentDidMount() {
-    const result = await GetDashboardInfo();
-    if (result.status === 200) {
-      const dashboardData = await result.json();
-      let eventsToday = [];
-      const dateToday = dateTodayString();
-      dashboardData.upcomingEvents.forEach((e) => {
-        const eventIsToday = e.eventDates.includes((date) => new Date(date.dateTime).getDate() === dateToday);
-        if (eventIsToday) {
-          eventsToday.push(e);
-        }
-      });
+  getTodayEvents = (events) => {
+    let eventsToday = [];
+    const dateToday = dateTodayString();
+    events.forEach((e) => {
+      const eventIsToday = e.eventDates.includes((date) => new Date(date.dateTime).getDate() === dateToday);
+      if (eventIsToday) {
+        eventsToday.push(e);
+      }
+    });
+
+    return eventsToday;
+  };
+
+  getSignedUpEvents = (events) => {
+    let signedUpEvents = [];
+    const userUuid = getClaim(jwtClaims.uuid);
+    events.forEach((e) => {
+      const userIsSubscribed = e.eventDates?.some((ed) => ed.eventDateUsers?.some((edu) => edu.userUuid === userUuid));
+
+      if (userIsSubscribed) {
+        signedUpEvents.push(e);
+      }
+    });
+
+    return signedUpEvents;
+  };
+
+  getUserAndAdminDashboard = async () => {
+    const eventResult = await GetAllEvents();
+    if (eventResult.status === 200) {
+      const events = await eventResult.json();
 
       this.setState({
         dashboardData: {
-          signedUpEvents: dashboardData.signedUpEvents,
-          upcomingEvents: dashboardData.upcomingEvents,
-          eventsToday,
-          unreadMessages: dashboardData.unreadMessages,
-          adminDashboard: dashboardData.adminDashboard ?? this.state.dashboardData.adminDashboard,
+          signedUpEvents: this.getSignedUpEvents(events),
+          upcomingEvents: events,
+          eventsToday: this.getTodayEvents(events),
         },
       });
     }
-  }
+  };
 
   getSiteAdminDashboard = () => {
     const SiteAdminDashboard = lazy(() => import("./site-admin-dashboard"));
     return (
       <Suspense fallback={<div>Loading admin component</div>}>
-        <SiteAdminDashboard data={this.state.dashboardData.adminDashboard} />
+        <SiteAdminDashboard />
       </Suspense>
     );
   };
 
+  componentDidMount() {
+    const userAccountRole = getClaim(jwtClaims.accountRole);
+    switch (userAccountRole) {
+      case roles.User:
+        this.getUserAndAdminDashboard();
+        break;
+      case roles.Admin:
+        this.getUserAndAdminDashboard();
+        break;
+      case roles.SiteAdmin:
+        break;
+      default:
+        break;
+    }
+  }
+
   render() {
+    const { dashboardData } = this.state;
+
     return (
       <div>
         <Header pageName="Dashboard" />
@@ -66,10 +101,10 @@ export default class Dashboard extends Component {
             this.getSiteAdminDashboard()
           ) : (
             <div className="fade-down flex-row">
-              <EventCard title="Aangemelde evenementen" events={this.state.dashboardData.signedUpEvents} />
-              <EventCard title="Aankomende evenementen" events={this.state.dashboardData.upcomingEvents} cardType="top" />
-              <EventCard title="Vandaag" events={this.state.dashboardData.eventsToday} />
-              <EventCard title="Nieuwe berichten" messages={this.state.dashboardData.unreadMessages} />
+              <EventCard title="Aangemelde evenementen" events={dashboardData.signedUpEvents} />
+              <EventCard title="Aankomende evenementen" events={dashboardData.upcomingEvents} cardType="top" />
+              <EventCard title="Vandaag" events={dashboardData.eventsToday} />
+              <EventCard title="Nieuwe berichten" messages={dashboardData.unreadMessages} />
             </div>
           )}
         </div>

@@ -8,7 +8,7 @@ import ReactModal from "components/shared/modal";
 import paginationFactory from "react-bootstrap-table2-paginator";
 import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
 import cellEditFactory from "react-bootstrap-table2-editor";
-import { clearForm, createGuid, getFormData } from "services/shared/form-data-helper";
+import { clearForm, createGuid, getFormDataObject } from "services/shared/form-data-helper";
 import ToolkitProvider, { Search } from "react-bootstrap-table2-toolkit";
 import "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css";
 
@@ -55,7 +55,7 @@ export default class CrudTable extends Component {
 
   onAdd = (e) => {
     e.preventDefault();
-    let formData = getFormData(`${this.props.id}-form`);
+    let formData = getFormDataObject(e);
     formData.uuid = createGuid();
     clearForm(`${this.props.id}-form`);
     this.props.onAdd(formData);

@@ -1,23 +1,32 @@
 import ApiActions from "services/shared/api/ApiActions";
-import { Delete, Get, Post } from "./shared/api/Api";
+import { Delete, Get, Post, Put } from "./shared/api/Api";
 import { sendRequest } from "./shared/api/api-middleware";
+import { arrayToQueryString } from "./shared/request-helper";
 
-export const LoginUser = async (json) => {
-  return await sendRequest(() => Post(ApiActions.Login, json), [401]);
+export const LoginUser = (json) => {
+  return sendRequest(() => Post(ApiActions.Login, json), [401, 403]);
 };
 
-export const GetAllUsers = async () => {
-  return await sendRequest(() => Get(ApiActions.AllUsers));
+export const UpdateUser = (json) => {
+  return sendRequest(() => Put(ApiActions.User, json), [401, 403]);
 };
 
-export const GetUsersByUuid = async (json) => {
-  return await sendRequest(() => Post(ApiActions.UsersByUuid, json));
+export const GetAllUsers = () => {
+  return sendRequest(() => Get(ApiActions.AllUsers));
 };
 
-export const RegisterUser = async (json) => {
-  return await sendRequest(() => Post(ApiActions.User, json));
+export const GetUsersByUuid = (data) => {
+  return sendRequest(() => Get(`${ApiActions.UsersByUuid}?uuidCollection=${arrayToQueryString(data)}`));
 };
 
-export const RemoveUser = async (uuid) => {
-  return await sendRequest(() => Delete(ApiActions.User + uuid));
+export const RegisterUser = (json) => {
+  return sendRequest(() => Post(ApiActions.User, json));
+};
+
+export const RemoveUser = (uuid) => {
+  return sendRequest(() => Delete(`${ApiActions.User}?uuid=${uuid}`));
+};
+
+export const ActivateUser = (code) => {
+  return sendRequest(() => Post(`${ApiActions.ActivateAccount}?code=${code}`));
 };

@@ -4,7 +4,7 @@ import { LoginUser } from "services/user";
 import React, { Component } from "react";
 import { toast } from "react-toastify";
 import routerPaths from "services/shared/router-paths";
-import { getFormData, toggleSpinner } from "services/shared/form-data-helper";
+import { getFormDataObject, toggleSpinner } from "services/shared/form-data-helper";
 import { setAuthorizationCookie } from "services/shared/cookie";
 
 export default class Login extends Component {
@@ -15,8 +15,11 @@ export default class Login extends Component {
     };
   }
 
-  setJwt = (authorizationTokens) => {
-    setAuthorizationCookie(authorizationTokens);
+  setJwt = (jwt, refreshToken) => {
+    setAuthorizationCookie({
+      jwt,
+      refreshToken,
+    });
     window.location.pathname = routerPaths.Dashboard;
   };
 
@@ -24,24 +27,26 @@ export default class Login extends Component {
     e.preventDefault();
     toggleSpinner("login-spinner", "login-submit-btn");
 
-    let formData = getFormData("login-form");
+    let formData = getFormDataObject(e);
     formData.loginCode = Number(formData.loginCode);
     const result = await LoginUser(formData);
 
     if (result.status === 200) {
       const data = await result.json();
 
-      if (this.state.multiRoleData !== null && data?.authorizationTokens !== undefined) {
-        this.setJwt(data.authorizationTokens);
+      if (this.state.multiRoleData !== null && data?.jwt !== undefined) {
+        this.setJwt(data.jwt, data.refreshToken);
         return;
       } else if (data?.userHasMultipleAccountRoles) {
         this.setState({ multiRoleData: data });
         toggleSpinner("login-spinner", "login-submit-btn");
         return;
       }
-      this.setJwt(data.authorizationTokens);
+      this.setJwt(data.jwt, data.refreshToken);
     } else if (result.status === 401) {
       toast.error("Verkeerde gebruikersnaam of wachtwoord");
+    } else if (result.status === 403) {
+      toast.error("Dit account is uitgeschakeld, neem contact op met de beheerder");
     }
 
     toggleSpinner("login-spinner", "login-submit-btn");

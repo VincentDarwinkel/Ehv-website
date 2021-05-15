@@ -10,8 +10,8 @@ const { getClaim } = require("services/jwt");
 const { default: jwtClaims } = require("../jwt-claims");
 
 async function renewAuthorizationTokens() {
-  const oldAuthorizationTokens = new Cookies()?.get("Jwt");
-  const result = await Post(ApiActions.RefreshJwt, oldAuthorizationTokens.refreshToken);
+  const refreshToken = new Cookies()?.get("Jwt")?.refreshToken;
+  const result = await Post(`${ApiActions.RefreshJwt}?refreshToken=${refreshToken}`);
   if (result.status === 401) {
     window.location.pathname = paths.Login;
     return;

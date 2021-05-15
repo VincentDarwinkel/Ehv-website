@@ -1,12 +1,10 @@
-import React from "react";
+import React, { Component } from "react";
 import "./index.css";
-import { Component } from "react";
 import User from "./user-card";
 import { GetAllUsers, RemoveUser } from "services/user";
 import Loading from "components/shared/loading/";
 import Header from "components/shared/header";
 import ReactModal from "components/shared/modal/";
-import { Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { getProfilePictureWithInitials } from "services/shared/user-account-helper";
 
@@ -18,6 +16,16 @@ export default class Users extends Component {
       cards: undefined,
       showModal: false,
       userToRemoveUuid: null,
+      modalOptions: {
+        description: null,
+        show: false,
+        callback: () => null,
+        close: () => {
+          let modalOptions = this.state.modalOptions;
+          modalOptions.show = false;
+          this.setState({ modalOptions });
+        },
+      },
     };
   }
 
@@ -33,19 +41,32 @@ export default class Users extends Component {
   generateUserCards = (userList) => {
     let cards = [];
 
-    for (let index = 0; index < userList.length; index++) {
-      const user = userList[index];
-      const age = this.calculateAge(new Date(user.birthdate));
+    for (let user of userList) {
+      const age = this.calculateAge(new Date(user.birthDate));
 
       if (user.hobbies == null) user.hobbies = [];
       if (user.favoriteArtists == null) user.favoriteArtists = [];
 
-      const hobbies = user.hobbies.map((hobby) => <label key={hobby.hobby}>{hobby.hobby}</label>);
-      const artists = user.favoriteArtists.map((artist) => <label key={artist.artist}>{artist.artist}</label>);
+      const hobbies = user.hobbies.map((hobby) => (
+        <label className="user-hobby" key={hobby.hobby}>
+          {hobby.hobby}
+        </label>
+      ));
+      const artists = user.favoriteArtists.map((artist) => (
+        <label className="user-artist" key={artist.artist}>
+          {artist.artist}
+        </label>
+      ));
 
       cards.push(
         <User
-          callback={() => this.showModal(user?.uuid)}
+          callback={() => {
+            let { modalOptions } = this.state;
+            modalOptions.show = true;
+            modalOptions.callback = () => this.removeUser(user?.uuid);
+            modalOptions.description = `Weet je zeker dat je ${user?.username} gebruiker wilt verwijderen?`;
+            this.setState({ modalOptions });
+          }}
           uuid={user?.uuid}
           key={user?.uuid}
           img={user.avatar ?? getProfilePictureWithInitials(user.username)}
@@ -54,7 +75,7 @@ export default class Users extends Component {
           artists={artists}
           hobbies={hobbies}
           about={user.about}
-          birthdate={new Date(user.birthdate).toLocaleDateString()}
+          birthDate={new Date(user.birthDate).toLocaleDateString()}
         />
       );
     }
@@ -68,23 +89,13 @@ export default class Users extends Component {
     return Math.abs(ageDate.getUTCFullYear() - 1970);
   };
 
-  showModal = (uuid) => {
-    this.setState({ userToRemoveUuid: uuid, showModal: true });
-  };
-
-  removeUser = async () => {
-    this.setState({
-      showModal: false,
-    });
-
-    const uuid = this.state.userToRemoveUuid;
+  removeUser = async (uuid) => {
     const result = await RemoveUser(uuid);
     if (result.status === 200) {
       toast.success("Gebruiker verwijderd");
       let cards = this.state.cards;
       cards = cards.filter((card) => card.key !== uuid);
       this.setState({ cards });
-      return;
     }
   };
 
@@ -92,14 +103,8 @@ export default class Users extends Component {
     return (
       <div>
         <Header pageName="Gebruikers" />
-        <ReactModal showModal={this.state.showModal} title="Gebruiker verwijderen" description="Gebruiker wordt verwijderd">
-          <Button variant="danger" onClick={() => this.removeUser()}>
-            Verwijderen
-          </Button>
-          <Button variant="secondary" onClick={() => this.setState({ showModal: false })}>
-            Annuleren
-          </Button>
-        </ReactModal>
+        <ReactModal modalOptions={this.state.modalOptions} />
+
         <div className="fade-down content">
           <div className="flex-row">{this.state.cards ?? <Loading />}</div>
         </div>

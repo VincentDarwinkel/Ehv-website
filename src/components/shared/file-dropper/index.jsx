@@ -90,11 +90,12 @@ export default class FileDropper extends Component {
 
     if (imagesToUpload.length === selectedFiles.filter((file) => file.type !== "video/mp4").length) {
       const formData = new FormData();
+      formData.append("path", this.props.currentDirectory);
       this.state.imagesToUpload.forEach((file) => {
         formData.append("files", file);
       });
 
-      const result = await uploadFiles(formData, `?path=${this.props.currentDirectory}`);
+      const result = await uploadFiles(formData);
       if (result.status === 200) {
         statuses.push("Afbeeldingen geüpload");
       } else {

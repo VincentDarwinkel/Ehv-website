@@ -29,6 +29,15 @@
   color: white;
 }
 
+.user-hobby,
+.user-artist {
+  margin: 2px;
+  background-color: rgb(104, 69, 150);
+  color: white;
+  border-radius: 2px;
+  padding: 5px;
+}
+
 @media only screen and (max-width: 600px) {
   .user-card {
     flex-flow: row;
