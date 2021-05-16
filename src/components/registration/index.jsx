@@ -56,6 +56,7 @@ export default class Registration extends Component {
     e.preventDefault();
     const { selectedArtists, selectedHobbies } = this.state;
     let formData = getFormDataObject(e);
+    formData.receiveEmail = formData.receiveEmail === "on";
 
     formData.hobbies = selectedHobbies.map((sh) => ({ hobby: sh }));
     formData.favoriteArtists = selectedArtists.map((sa) => ({ artist: sa }));
@@ -147,7 +148,7 @@ export default class Registration extends Component {
             </Form.Group>
             <Form.Group controlId="registration-receive-email">
               <Form.Label>Emails ontvangen:</Form.Label>
-              <Form.Check id="registration-receive-email" defaultChecked type="checkbox" label="Emails ontvangen" />
+              <Form.Check id="registration-receive-email" name="receiveEmail" defaultChecked type="checkbox" label="Emails ontvangen" />
             </Form.Group>
 
             <b

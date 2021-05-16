@@ -16,7 +16,7 @@ export const GetAllUsers = () => {
 };
 
 export const GetUsersByUuid = (data) => {
-  return sendRequest(() => Get(`${ApiActions.UsersByUuid}?uuidCollection=${arrayToQueryString(data)}`));
+  return sendRequest(() => Get(`${ApiActions.UsersByUuid}${arrayToQueryString(data, "uuid-collection")}`));
 };
 
 export const RegisterUser = (json) => {

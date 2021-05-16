@@ -16,14 +16,22 @@ export default class CrudTable extends Component {
   constructor() {
     super();
     this.state = {
-      showModal: false,
+      modalOptions: {
+        description: "Item(s) verwijderen?",
+        show: false,
+        callback: () => this.onRemove(),
+        close: () => {
+          let modalOptions = this.state.modalOptions;
+          modalOptions.show = false;
+          this.setState({ modalOptions });
+        },
+      },
       selectedUuids: [],
       addSectionOpen: false,
     };
   }
 
   onRemove = async () => {
-    this.setState({ showModal: false });
     await this.props.onRemove(this.state.selectedUuids);
     this.setState({ selectedUuids: [] });
   };
@@ -101,18 +109,7 @@ export default class CrudTable extends Component {
 
     return (
       <div>
-        <ReactModal
-          showModal={this.state.showModal}
-          title={`${this.state.selectedUuids.length > 1 ? "items" : "item"} verwijderen`}
-          description={this.state.selectedUuids.length > 1 ? "Items verwijderen?" : "Item verwijderen"}
-        >
-          <Button variant="danger" onClick={() => this.onRemove()}>
-            Verwijderen
-          </Button>
-          <Button variant="secondary" onClick={() => this.setState({ showModal: false })}>
-            Annuleren
-          </Button>
-        </ReactModal>
+        <ReactModal modalOptions={this.state.modalOptions} />
         <div className="content">
           <label
             hidden={!this.props?.addEnabled}
@@ -144,7 +141,15 @@ export default class CrudTable extends Component {
                 <li className="fas fa-pen" />
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item onClick={() => this.setState({ showModal: true })}>Verwijderen</Dropdown.Item>
+                <Dropdown.Item
+                  onClick={() => {
+                    let { modalOptions } = this.state;
+                    modalOptions.show = true;
+                    this.setState({ modalOptions });
+                  }}
+                >
+                  Verwijderen
+                </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </div>

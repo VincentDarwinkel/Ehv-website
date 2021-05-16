@@ -5,8 +5,7 @@ import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import "react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css";
 import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
 import { AddHobby, EditHobbies, GetHobbies, RemoveHobbies } from "services/hobbies";
-import { AddArtist, EditArtist, RemoveArtists } from "services/artists";
-import { GetArtists } from "services/artists";
+import { AddArtist, EditArtist, GetArtists, RemoveArtists } from "services/artists";
 import CrudTable from "components/shared/crud-table";
 import { stringIsNullOrEmpty } from "services/shared/form-data-helper";
 import { toast } from "react-toastify";
@@ -17,6 +16,16 @@ export default class ServerManager extends Component {
     this.state = {
       artists: [],
       hobbies: [],
+      modalOptions: {
+        description: null,
+        show: false,
+        callback: () => null,
+        close: () => {
+          let modalOptions = this.state.modalOptions;
+          modalOptions.show = false;
+          this.setState({ modalOptions });
+        },
+      },
     };
   }
 
@@ -36,10 +45,14 @@ export default class ServerManager extends Component {
     const result = await RemoveHobbies(selectedUuids);
     if (result.status === 200) {
       let hobbies = this.state.hobbies.filter((h) => !selectedUuids.includes(h.uuid));
+      let { modalOptions } = this.state;
+      modalOptions.show = true;
+      modalOptions.callback = () => this.onHobbyRemove(selectedUuids);
+
       this.setState({
         hobbies,
         selectedUuids: [],
-        showModal: false,
+        modalOptions,
       });
       toast.success("Hobby verwijderd");
     }
@@ -49,10 +62,14 @@ export default class ServerManager extends Component {
     const result = await RemoveArtists(selectedUuids);
     if (result.status === 200) {
       let artists = this.state.artists.filter((a) => !selectedUuids.includes(a.uuid));
+      let { modalOptions } = this.state;
+      modalOptions.show = true;
+      modalOptions.callback = () => this.onArtistRemove(selectedUuids);
+
       this.setState({
         artists,
         selectedUuids: [],
-        showModal: false,
+        modalOptions,
       });
       toast.success("Artiest verwijderd");
     }
@@ -85,7 +102,7 @@ export default class ServerManager extends Component {
   };
 
   onHobbyAdd = async (formData) => {
-    const result = await AddHobby(formData);
+    const result = await AddHobby(formData?.name);
     if (result.status === 200) {
       let hobbies = this.state.hobbies;
       hobbies.unshift(formData);
@@ -95,7 +112,7 @@ export default class ServerManager extends Component {
   };
 
   onArtistAdd = async (formData) => {
-    const result = await AddArtist(formData);
+    const result = await AddArtist(formData?.name);
     if (result.status === 200) {
       let artists = this.state.artists;
       artists.unshift(formData);

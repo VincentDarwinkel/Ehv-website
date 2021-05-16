@@ -18,6 +18,12 @@ function getSiteAdminRoutes() {
   return (
     <span>
       <Suspense fallback={<div>Loading admin component</div>}>
+        <ProtectedRoute
+          roles={[accountRoles.SiteAdmin]}
+          exact
+          path={routerPaths.Account}
+          component={React.lazy(() => import("components/account"))}
+        />
         <ProtectedRoute roles={[accountRoles.SiteAdmin]} exact path={routerPaths.Logs} component={React.lazy(() => import("components/logs/"))} />
         <ProtectedRoute
           roles={[accountRoles.SiteAdmin]}

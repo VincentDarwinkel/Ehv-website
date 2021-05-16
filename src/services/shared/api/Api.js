@@ -79,6 +79,7 @@ export const Delete = async (action, data = null) => {
       cache: "no-cache",
       credentials: "same-origin",
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${new Cookies().get("Jwt")?.jwt}`,
       },
 

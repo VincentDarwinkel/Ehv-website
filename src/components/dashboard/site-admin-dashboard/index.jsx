@@ -14,7 +14,8 @@ export default class SiteAdminDashboard extends Component {
     this.state = {
       users: [],
       logs: [],
-      serverManager: [],
+      hobbies: [],
+      artists: [],
     };
   }
 
@@ -24,11 +25,25 @@ export default class SiteAdminDashboard extends Component {
     const hobbyResult = await GetHobbies();
     const artistsResult = await GetArtists();
 
-    let { users, logs, serverManager } = this.state;
-    users = await userResult.json();
-    logs = await logResult.json();
+    let users = [],
+      logs = [],
+      hobbies = [],
+      artists = [];
 
-    this.setState({ users, logs, serverManager });
+    if (userResult.status === 200) {
+      users = await userResult.json();
+    }
+    if (logResult.status === 200) {
+      logs = await logResult.json();
+    }
+    if (hobbyResult.status === 200) {
+      hobbies = await hobbyResult.json();
+    }
+    if (artistsResult.status === 200) {
+      artists = await artistsResult.json();
+    }
+
+    this.setState({ users, logs, hobbies, artists });
   };
 
   getGraphColors = (total) => {
@@ -37,7 +52,7 @@ export default class SiteAdminDashboard extends Component {
   };
 
   render() {
-    const { users, logs, serverManager } = this.state;
+    const { users, logs, hobbies, artists } = this.state;
 
     const options = {
       legend: {
@@ -91,7 +106,7 @@ export default class SiteAdminDashboard extends Component {
               labels: ["Hobbies", "Artists"],
               datasets: [
                 {
-                  data: [this.props.data?.hobbyCount, this.props.data?.artistCount],
+                  data: [hobbies?.length, artists?.length],
                   backgroundColor: this.getGraphColors(3),
                   borderColor: this.getGraphColors(3),
                 },
