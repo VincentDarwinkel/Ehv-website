@@ -6,7 +6,7 @@
     "@testing-library/jest-dom": "*",
     "@testing-library/react": "11.2.6",
     "@testing-library/user-event": "^12.8.3",
-    "@types/react": "*",
+    "@types/react": "17.0.4",
     "bootstrap": "*",
     "chart.js": "*",
     "jquery": "*",
