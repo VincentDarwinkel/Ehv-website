@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  website:
+  sample:
     container_name: Ehv_frontend
     build:
       context: .

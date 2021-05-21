@@ -56,12 +56,12 @@ export default class Login extends Component {
     return (
       <section id="login">
         <div className="fade-down">
-          <h1 className="text-center">Welkom Eindhovense vriendjes</h1>
+          <h1 className="text-center">Welkom Ehv vrienden</h1>
           <Form className="card" id="login-form" onSubmit={this.submitForm}>
             <h6>{this.test2}</h6>
             <h3 className="text-center">Login</h3>
-            <Form.Control className="mb-1" autoFocus type="text" placeholder="Gebruikersnaam" minLength="4" name="username" required />
-            <Form.Control className="mb-1" type="password" placeholder="Wachtwoord" minLength="8" name="password" required />
+            <Form.Control className="mb-1" autoFocus type="text" placeholder="Gebruikersnaam" name="username" required />
+            <Form.Control className="mb-1" type="password" placeholder="Wachtwoord" name="password" required />
             <Form.Group hidden={this.state.multiRoleData === null}>
               <Form.Label>Gebruikersrol selecteren:</Form.Label>
               <Form.Control as="select" name="selectedAccountRole">

@@ -114,7 +114,7 @@ class Account extends Component {
               <Form onSubmit={this.onSubmit}>
                 <Form.Group>
                   <Form.Label>Gebruikersnaam:</Form.Label>
-                  <Form.Control type="text" name="username" defaultValue={user?.username} minLength="4" placeholder="Gebruikersnaam" required />
+                  <Form.Control type="text" name="username" defaultValue={user?.username} placeholder="Gebruikersnaam" required />
                 </Form.Group>
                 <Form.Group>
                   <Form.Label>Email:</Form.Label>
@@ -182,7 +182,7 @@ class Account extends Component {
                 <hr />
                 <Form.Group>
                   <Form.Label>Wachtwoord:</Form.Label>
-                  <Form.Control type="password" name="password" minLength="8" placeholder="Wachtwoord" required />
+                  <Form.Control type="password" name="password" placeholder="Wachtwoord" required />
                 </Form.Group>
                 <Button block type="submit" id="registration-submit-btn">
                   Aanpassen

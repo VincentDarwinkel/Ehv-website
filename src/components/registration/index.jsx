@@ -87,10 +87,10 @@ export default class Registration extends Component {
             <hr />
             <Form.Group>
               <Form.Label>Gebruikersnaam:</Form.Label>
-              <Form.Control type="text" name="username" minLength="4" placeholder="Gebruikersnaam" required />
+              <Form.Control type="text" name="username" placeholder="Gebruikersnaam" required />
             </Form.Group>
             <Form.Group>
-              <Form.Label>Geslacht:</Form.Label>
+              <Form.Label>Biologisch geslacht:</Form.Label>
               <Form.Control as="select" name="gender" required>
                 <option value="male">Man</option>
                 <option value="female">Vrouw</option>
@@ -106,11 +106,11 @@ export default class Registration extends Component {
             </Form.Group>
             <Form.Group>
               <Form.Label>Wachtwoord:</Form.Label>
-              <Form.Control type="password" name="password" minLength="8" placeholder="Wachtwoord" required />
+              <Form.Control type="password" name="password" placeholder="Wachtwoord" required />
             </Form.Group>
             <Form.Group>
               <Form.Label>Herhaal wachtwoord:</Form.Label>
-              <Form.Control type="password" name="repeat-password" minLength="8" placeholder="Herhaal wachtwoord" required />
+              <Form.Control type="password" name="repeat-password" placeholder="Herhaal wachtwoord" required />
             </Form.Group>
             <hr />
             <p className="text-center">

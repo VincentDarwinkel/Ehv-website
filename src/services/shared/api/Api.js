@@ -1,3 +1,5 @@
+import Cookies from "universal-cookie";
+
 export const Get = async (action) => {
   try {
     return await fetch(action, {
@@ -5,7 +7,9 @@ export const Get = async (action) => {
       mode: "cors",
       cache: "no-cache",
       credentials: "same-origin",
-      headers: {},
+      headers: {
+        Authorization: `Bearer ${new Cookies().get("Jwt")?.jwt}`,
+      },
 
       redirect: "follow",
       referrerPolicy: "no-referrer",
@@ -26,8 +30,11 @@ export const Post = async (action, data = null, contentType = "application/json"
         contentType === "application/json"
           ? {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${new Cookies().get("Jwt")?.jwt}`,
             }
-          : {},
+          : {
+              Authorization: `Bearer ${new Cookies().get("Jwt")?.jwt}`,
+            },
 
       redirect: "follow",
       referrerPolicy: "no-referrer",
@@ -49,8 +56,11 @@ export const Put = async (action, data = null, contentType = "application/json")
         contentType === "application/json"
           ? {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${new Cookies().get("Jwt")?.jwt}`,
             }
-          : {},
+          : {
+              Authorization: `Bearer ${new Cookies().get("Jwt")?.jwt}`,
+            },
 
       redirect: "follow",
       referrerPolicy: "no-referrer",
@@ -70,6 +80,7 @@ export const Delete = async (action, data = null) => {
       credentials: "same-origin",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${new Cookies().get("Jwt")?.jwt}`,
       },
 
       redirect: "follow",
