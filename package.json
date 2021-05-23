@@ -2,13 +2,43 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
+  "dependencies": {
+    "@testing-library/jest-dom": "*",
+    "@testing-library/react": "*",
+    "@testing-library/user-event": "^13.1.8",
+    "@types/react": "*",
+    "bootstrap": "*",
+    "chart.js": "*",
+    "jquery": "*",
+    "prettier-eslint": "*",
+    "react": "17.0.2",
+    "react-bootstrap": "1.5.2",
+    "react-bootstrap-table-next": "*",
+    "react-bootstrap-table2-editor": "*",
+    "react-bootstrap-table2-filter": "*",
+    "react-bootstrap-table2-paginator": "*",
+    "react-bootstrap-table2-toolkit": "*",
+    "react-bootstrap-typeahead": "*",
+    "react-chartjs-2": "*",
+    "react-cropper": "*",
+    "react-device-detect": "^1.17.0",
+    "react-dom": "17.0.2",
+    "react-player": "^2.9.0",
+    "react-router-dom": "*",
+    "react-scripts": "*",
+    "react-swipeable": "^6.1.0",
+    "react-toastify": "*",
+    "react-tooltip": "4.2.17",
+    "simple-console-logger": "*",
+    "universal-cookie": "*"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "prettier:write": "npx prettier --write **/*.{js,jsx,json,css} && npx prettier --write *.{js,jsx,json,css}",
-    "lint": "npm i src/**/*.js src/**/*.jsx"
+    "lint": "eslint src/**/*.js src/**/*.jsx"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -25,22 +55,18 @@
       "last 1 safari version"
     ]
   },
-  "dependencies": {
-    "@types/react": "^17.0.6",
-    "bootstrap": "^5.0.1",
-    "jquery": "^3.6.0",
-    "react": "^17.0.2",
-    "react-bootstrap": "^1.6.0",
-    "react-bootstrap-typeahead": "^5.1.4",
-    "react-chartjs-2": "^3.0.3",
-    "react-cropper": "^2.1.7",
-    "react-device-detect": "^1.17.0",
-    "react-dom": "^17.0.2",
-    "react-player": "^2.9.0",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "^4.0.3",
-    "react-toastify": "^7.0.4",
-    "react-tooltip": "^4.2.19",
-    "universal-cookie": "^4.0.4"
+  "devDependencies": {
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.6",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-css-modules": "^2.11.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-json": "^3.0.0",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-react": "^7.23.2",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "prettier": "^2.3.0"
   }
 }
