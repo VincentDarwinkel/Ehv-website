@@ -23,6 +23,7 @@ test("Check if paths exists", () => {
     DatePickerForm: "/datepicker/form/",
     Gallery: "/gallery/",
     Users: "/users/",
+    Account: "/account/",
     Logs: "/logs/",
     ServerManager: "/server-manager/",
   });
