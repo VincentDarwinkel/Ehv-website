@@ -91,6 +91,7 @@ export default class Login extends Component {
           <h6 id="author">
             Door:
             <a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/vincent-darwinkel/">
+              {" "}
               Vincent Darwinkel
             </a>
           </h6>
