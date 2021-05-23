@@ -48,7 +48,11 @@ export default class DatepickerAvailability extends Component {
 
   onSubmit = async () => {
     const availabilities = this.state.availableDates;
-    const result = await saveAvailability(availabilities, this.state.datepicker.uuid);
+    const result = await saveAvailability({
+      availableDates: availabilities,
+      datepickerUuid: this.state.datepicker.uuid,
+    });
+
     if (result.status === 200) {
       toast.success("Beschikbaarheid opgeslagen");
     }

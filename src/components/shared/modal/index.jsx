@@ -1,35 +1,28 @@
 import "components/shared/loading/index.css";
 import React, { Component } from "react";
+import { Button, ButtonGroup } from "react-bootstrap";
 import "./index.css";
 
 export default class ReactModal extends Component {
-  constructor() {
-    super();
-
-    this.state = {
-      showModal: false,
-    };
-  }
-
-  openModal = () => {
-    this.setState({
-      showModal: true,
-    });
-  };
-
-  closeModal = () => {
-    this.setState({
-      showModal: false,
-    });
-  };
-
   render() {
     return (
-      <div className="react-modal fade-down" hidden={!this.props.showModal}>
+      <div className="react-modal fade-down" hidden={!this.props.modalOptions?.show}>
         <div className="react-modal-content">
-          <h4>{this.props.title}</h4>
-          <p>{this.props.description}</p>
-          <div className="react-modal-btn-group">{this.props.children}</div>
+          <p>{this.props.modalOptions?.description}</p>
+          <div className="react-modal-btn-group">
+            <ButtonGroup>
+              <Button
+                variant="danger"
+                onClick={() => {
+                  this.props.modalOptions?.close();
+                  this.props.modalOptions?.callback();
+                }}
+              >
+                Doorgaan
+              </Button>
+              <Button onClick={() => this.props.modalOptions?.close()}>Annuleren</Button>
+            </ButtonGroup>
+          </div>
         </div>
       </div>
     );

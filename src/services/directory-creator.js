@@ -3,5 +3,5 @@ import { Post } from "./shared/api/Api";
 import { sendRequest } from "./shared/api/api-middleware";
 
 export const CreateDirectory = async (formData) => {
-  return await sendRequest(() => Post(ApiActions.FileApiDirectory, formData));
+  return sendRequest(() => Post(ApiActions.FileApiDirectory, formData, ""));
 };

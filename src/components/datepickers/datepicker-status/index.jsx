@@ -4,7 +4,7 @@ import { getDatepicker } from "services/datepickers";
 import { getFullLocaleDatestring } from "services/shared/time-helper";
 import { GetUsersByUuid } from "services/user";
 import "./index.css";
-import { createGuid, getFormData, stringIsNullOrEmpty } from "services/shared/form-data-helper";
+import { createGuid, getFormDataByIdObject, stringIsNullOrEmpty } from "services/shared/form-data-helper";
 import ReactTooltip from "react-tooltip";
 import CustomProgressBar from "components/shared/progress-bar";
 import { Button, Form, ListGroup } from "react-bootstrap";
@@ -19,9 +19,18 @@ export default class DatepickerStatus extends Component {
     this.state = {
       datepicker: null,
       availableUsers: [],
-      selectedDatesUuid: [],
+      selectedDates: [],
       steps: [],
-      showModal: false,
+      modalOptions: {
+        description: "Weet je zeker dat je de datumprikker wilt omzetten naar een event?",
+        show: false,
+        callback: () => this.convertDatepickerToEvent("datepicker-status-form"),
+        close: () => {
+          let modalOptions = this.state.modalOptions;
+          modalOptions.show = false;
+          this.setState({ modalOptions });
+        },
+      },
     };
   }
 
@@ -49,6 +58,9 @@ export default class DatepickerStatus extends Component {
       this.setState({ datepicker });
 
       const usersUuidCollection = [...new Set([...availableUsersInDatepicker])]; // remove duplicates
+      if (usersUuidCollection.length <= 0) {
+        return;
+      }
       const userResult = await GetUsersByUuid(usersUuidCollection);
       if (userResult.status === 200) {
         const availableUsers = await userResult.json();
@@ -66,7 +78,7 @@ export default class DatepickerStatus extends Component {
   };
 
   setSelectedDate = (dateUuid) => {
-    let selectedDates = this.state.selectedDatesUuid;
+    let selectedDates = this.state.selectedDates;
     const indexOf = selectedDates.findIndex((sdUuid) => sdUuid === dateUuid);
     if (indexOf === -1) {
       selectedDates.push(dateUuid);
@@ -85,27 +97,26 @@ export default class DatepickerStatus extends Component {
     return result;
   };
 
-  getFormData = () => {
-    const formData = getFormData("datepicker-conversion-form");
+  getFormData = (formId) => {
+    const formData = getFormDataByIdObject(formId);
     const formDataArray = Object.keys(formData);
     return {
       datepickerUuid: this.state.datepicker.uuid,
-      selectedDatesUuid: this.state.selectedDatesUuid,
+      selectedDates: this.state.selectedDates,
       eventSteps: formDataArray?.map((key, index) => ({ stepNr: index, text: formData[key] })),
     };
   };
 
   validateFormData = () => {
-    if (this.state.selectedDatesUuid?.length <= 0) {
+    if (this.state.selectedDates?.length <= 0) {
       toast.error("Er zijn geen dagen geselecteerd");
       return false;
     }
     return true;
   };
 
-  convertDatepickerToEvent = async () => {
-    this.setState({ showModal: false });
-    const datepickerConversionModel = this.getFormData();
+  convertDatepickerToEvent = async (formId) => {
+    const datepickerConversionModel = this.getFormData(formId);
     if (!this.validateFormData()) {
       return;
     }
@@ -122,7 +133,7 @@ export default class DatepickerStatus extends Component {
   };
 
   getSelectedDatesOverview = () => {
-    return this.state.selectedDatesUuid.map((dateUuid) => {
+    return this.state.selectedDates.map((dateUuid) => {
       const date = this.state.datepicker.dates.find((d) => d.uuid === dateUuid);
       return <ListGroup.Item key={`${dateUuid}-selected`}>{getFullLocaleDatestring(date.dateTime)}</ListGroup.Item>;
     });
@@ -131,32 +142,46 @@ export default class DatepickerStatus extends Component {
   onDateClick = (date) => {
     const card = document.getElementById(date.uuid);
     const backgroundColor = card.style.backgroundColor;
-    if (backgroundColor === "rgb(59, 90, 148)" || stringIsNullOrEmpty(backgroundColor)) {
-      card.style.backgroundColor = "rgb(200, 200, 200)";
+    if (backgroundColor === "rgb(45, 45, 45)" || stringIsNullOrEmpty(backgroundColor)) {
+      card.style.backgroundColor = "rgb(140, 140, 140)";
       card.style.color = "black";
     } else {
-      card.style.backgroundColor = "rgb(59, 90, 148)";
+      card.style.backgroundColor = "rgb(45, 45, 45)";
       card.style.color = "white";
     }
     this.setSelectedDate(date.uuid);
+  };
+
+  addStepClick = () => {
+    let { steps } = this.state;
+    const uuid = createGuid();
+    steps.push(
+      <Form.Group className="datepicker-status-step" key={uuid}>
+        <Form.Control name={uuid} className="d-inline-block" placeholder="stap" />
+        <Button
+          onClick={() => {
+            let st = this.state.steps;
+            const indexOf = st.findIndex((s) => s.key === uuid);
+            if (indexOf !== -1) {
+              steps.splice(indexOf, 1);
+              this.setState({ st });
+            }
+          }}
+          className="d-inline-block mb-1"
+        >
+          <i className="fas fa-times" />
+        </Button>
+      </Form.Group>
+    );
+
+    this.setState({ steps });
   };
 
   render() {
     return (
       <div>
         <Header pageName="Datumprikker status" />
-        <ReactModal
-          showModal={this.state.showModal}
-          title="Datumprikker omzetten"
-          description="Weet je zeker dat je de datumprikker wilt omzetten naar een event?"
-        >
-          <Button variant="danger" onClick={() => this.convertDatepickerToEvent()}>
-            Omzetten
-          </Button>
-          <Button variant="secondary" onClick={() => this.setState({ showModal: false })}>
-            Annuleren
-          </Button>
-        </ReactModal>
+        <ReactModal modalOptions={this.state.modalOptions} />
         <div className="content">
           {this.state.datepicker?.dates?.map((date) => (
             <div className="ehv-card-no-padding mb-2 noselect" key={date.uuid} id={date.uuid} style={{ cursor: "pointer" }}>
@@ -208,36 +233,9 @@ export default class DatepickerStatus extends Component {
               Gebruikers krijgen een overzicht van stappen die moeten worden voltooid zodat die persoon voorbereid bij het event kan aansluiten.
               Stappen toevoegen is optioneel
             </small>
-            <Form id="datepicker-conversion-form">
+            <Form id="datepicker-status-form">
               <div className="mt-2">{this.state.steps}</div>
-              <Button
-                disabled={this.state.datepicker?.uuid === undefined}
-                variant="primary"
-                onClick={() => {
-                  let steps = this.state.steps;
-                  const uuid = createGuid();
-                  steps.push(
-                    <Form.Group className="datepicker-status-step" key={uuid}>
-                      <Form.Control name={uuid} className="d-inline-block" placeholder="stap" />
-                      <Button
-                        onClick={() => {
-                          let st = this.state.steps;
-                          const indexOf = st.findIndex((s) => s.key === uuid);
-                          if (indexOf !== -1) {
-                            steps.splice(indexOf, 1);
-                            this.setState({ st });
-                          }
-                        }}
-                        className="d-inline-block mb-1"
-                      >
-                        <i className="fas fa-times" />
-                      </Button>
-                    </Form.Group>
-                  );
-
-                  this.setState({ steps });
-                }}
-              >
+              <Button disabled={this.state.datepicker?.uuid === undefined} variant="primary" onClick={() => this.addStepClick()}>
                 <i className="fas fa-plus" /> Stap toevoegen
               </Button>
             </Form>
@@ -246,7 +244,11 @@ export default class DatepickerStatus extends Component {
             <Button
               disabled={this.state.datepicker?.uuid === undefined}
               id="datepicker-status-submit-btn"
-              onClick={() => this.setState({ showModal: true })}
+              onClick={() => {
+                let { modalOptions } = this.state;
+                modalOptions.show = true;
+                this.setState({ modalOptions });
+              }}
               variant="primary"
               block
               className="mt-3"

@@ -21,10 +21,15 @@ export default class Event extends Component {
       showModal: false,
       userUuid: getClaim(jwtClaims.uuid),
       availableUsers: [],
-      modalAction: {
-        title: null,
+      modalOptions: {
         description: null,
-        onRemove: null,
+        show: false,
+        callback: () => null,
+        close: () => {
+          let modalOptions = this.state.modalOptions;
+          modalOptions.show = false;
+          this.setState({ modalOptions });
+        },
       },
     };
   }
@@ -89,7 +94,9 @@ export default class Event extends Component {
     const result = await CancelEvent(this.state.event.uuid);
     if (result.status === 200) {
       toast.success("Event geannuleerd");
-      window.location = routerPaths.Events;
+      this.timerHandle = setTimeout(() => {
+        window.location = routerPaths.Events;
+      }, 5000);
     }
   };
 
@@ -98,14 +105,7 @@ export default class Event extends Component {
 
     return (
       <div>
-        <ReactModal showModal={this.state.showModal} title={this.state.modalAction.title} description={this.state.modalAction.description}>
-          <Button variant="danger" onClick={this.state.modalAction.onRemove}>
-            Verwijderen
-          </Button>
-          <Button variant="secondary" onClick={() => this.setState({ showModal: false })}>
-            Annuleren
-          </Button>
-        </ReactModal>
+        <ReactModal modalOptions={this.state.modalOptions} />
         <Header pageName="Event" />
         {this.state.event?.uuid === null ? <Loading /> : null}
         <div className="content fade-down">
@@ -136,14 +136,11 @@ export default class Event extends Component {
                         variant="primary"
                         block
                         onClick={() => {
-                          this.setState({
-                            modalAction: {
-                              title: "Afmelden van event datum",
-                              description: "Weet je zeker dat je je wilt afmelden?",
-                              onRemove: () => this.unsubscribeFromDate(date.uuid),
-                            },
-                            showModal: true,
-                          });
+                          let { modalOptions } = this.state;
+                          modalOptions.description = "Weet je zeker dat je je wilt afmelden van deze dag?";
+                          modalOptions.callback = () => this.unsubscribeFromDate(date.uuid);
+                          modalOptions.show = true;
+                          this.setState({ modalOptions });
                         }}
                       >
                         Afmelden
@@ -172,7 +169,7 @@ export default class Event extends Component {
                     as="li"
                   >
                     <i className="fas fa-check" hidden={!step.completed} />
-                    <span className="event-task-description">{step.description}</span>
+                    <span className="event-task-description">{step.text}</span>
                   </ListGroup.Item>
                 ))}
               </ListGroup>
@@ -191,16 +188,13 @@ export default class Event extends Component {
                   variant="secondary"
                   block
                   className="mt-4"
-                  onClick={() =>
-                    this.setState({
-                      modalAction: {
-                        title: "Event annuleren",
-                        description: "Weet je zeker dat je het event wilt annuleren?",
-                        onRemove: () => this.cancelEvent(),
-                      },
-                      showModal: true,
-                    })
-                  }
+                  onClick={() => {
+                    let { modalOptions } = this.state;
+                    modalOptions.description = "Weet je zeker dat je het event wilt annuleren?";
+                    modalOptions.show = true;
+                    modalOptions.callback = this.cancelEvent;
+                    this.setState({ modalOptions });
+                  }}
                 >
                   Annuleren
                 </Button>

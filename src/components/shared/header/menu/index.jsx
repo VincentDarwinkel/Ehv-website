@@ -53,6 +53,15 @@ export default class Menu extends Component {
         ),
         accountRoles: [accountRole.User, accountRole.Admin, accountRole.SiteAdmin],
       },
+      {
+        a: (
+          <a key="menu-account" href={routerPaths.Account}>
+            <i class="fas fa-user" />
+            Account
+          </a>
+        ),
+        accountRoles: [accountRole.User, accountRole.Admin, accountRole.SiteAdmin],
+      },
     ];
 
     return links.filter((link) => link.accountRoles.includes(userRole)).map((link) => link.a);

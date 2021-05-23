@@ -1,7 +1,7 @@
 import "./index.css";
 import React, { Component } from "react";
 import { Form, Button } from "react-bootstrap";
-import { createGuid, getFormData, stringIsNullOrEmpty } from "services/shared/form-data-helper";
+import { createGuid, getFormDataObject, stringIsNullOrEmpty } from "services/shared/form-data-helper";
 import { isoToLocale, localeToISO } from "services/shared/time-helper";
 import ReactModal from "components/shared/modal";
 
@@ -11,10 +11,14 @@ export default class DatepickerForm extends Component {
     this.state = {
       dateSelectors: [],
       modalOptions: {
-        showModal: false,
-        title: null,
         description: null,
-        modalAction: null,
+        show: false,
+        callback: () => null,
+        close: () => {
+          let modalOptions = this.state.modalOptions;
+          modalOptions.show = false;
+          this.setState({ modalOptions });
+        },
       },
     };
   }
@@ -33,8 +37,8 @@ export default class DatepickerForm extends Component {
     });
   };
 
-  getFormData = () => {
-    let formData = getFormData("datepicker-form");
+  getFormData = (e) => {
+    let formData = getFormDataObject(e);
     formData.uuid = this.props.data?.uuid;
     formData.expires = localeToISO(`${formData.expiresDate}T${formData.expiresTime}`);
     formData.dates = [];
@@ -57,7 +61,7 @@ export default class DatepickerForm extends Component {
 
   onSubmit = async (e) => {
     e.preventDefault();
-    const formData = this.getFormData();
+    const formData = this.getFormData(e);
     await this.props.onSubmit(formData);
   };
 
@@ -107,13 +111,13 @@ export default class DatepickerForm extends Component {
                 return;
               }
 
-              let modalOptions = this.state.modalOptions;
-              modalOptions.modalAction = () => this.removeSelector(uuid);
-              modalOptions.title = "Verwijderen dag";
+              let { modalOptions } = this.state;
+              modalOptions.callback = () => this.removeSelector(uuid);
+              modalOptions.show = true;
               modalOptions.description =
                 "Waarschuwing als je deze dag verwijderd worden alle beschikbaarheden " +
                 "die zijn opgegeven verwijderd en krijgen gebruikers die op deze datumprikker hebben gereageerd een melding. Weet je zeker dat je wilt doorgaan?";
-              modalOptions.showModal = true;
+
               this.setState({ modalOptions });
             }}
             variant="primary"
@@ -140,33 +144,7 @@ export default class DatepickerForm extends Component {
   render() {
     return (
       <div>
-        <ReactModal
-          showModal={this.state.modalOptions.showModal}
-          title={this.state.modalOptions.title}
-          description={this.state.modalOptions.description}
-        >
-          <Button
-            variant="danger"
-            onClick={() => {
-              let modalOptions = this.state.modalOptions;
-              modalOptions.modalAction();
-              modalOptions.showModal = false;
-              this.setState({ modalOptions });
-            }}
-          >
-            Verwijderen
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              let modalOptions = this.state.modalOptions;
-              modalOptions.showModal = false;
-              this.setState({ modalOptions });
-            }}
-          >
-            Annuleren
-          </Button>
-        </ReactModal>
+        <ReactModal modalOptions={this.state.modalOptions} />
         <div className="ehv-card" id="datepicker-form-wrapper">
           <Form onSubmit={this.onSubmit} id="datepicker-form">
             <Form.Group>

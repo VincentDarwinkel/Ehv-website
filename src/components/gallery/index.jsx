@@ -8,6 +8,8 @@ import { Button, Dropdown } from "react-bootstrap";
 import ReactModal from "components/shared/modal";
 import EmptyFolder from "components/shared/empty-folder";
 import DirectoryCreator from "components/shared/directory-creator";
+import { getClaim } from "services/jwt";
+import jwtClaims from "services/shared/jwt-claims";
 
 export default class Gallery extends Component {
   constructor() {
@@ -22,11 +24,19 @@ export default class Gallery extends Component {
       hideVideoView: true,
       xDown: null,
       yDown: null,
-      showModal: false,
-      modalAction: null,
       showedOption: null,
       directoryContainsFile: false,
       directoryContainsFolder: false,
+      modalOptions: {
+        description: "Weet je zeker dat je dit item wilt verwijderen?",
+        show: false,
+        callback: () => null,
+        close: () => {
+          let modalOptions = this.state.modalOptions;
+          modalOptions.show = false;
+          this.setState({ modalOptions });
+        },
+      },
     };
   }
 
@@ -88,7 +98,7 @@ export default class Gallery extends Component {
       const items = await filesResponse.json();
       const directoryInfo = await directoryInfoResponse.json();
 
-      const uuid = "091f31ae-a4e5-41b1-bb86-48dbfe40b839"; // TODO remove this temp variable
+      const uuid = getClaim(jwtClaims.uuid);
       this.setState(
         {
           currentItems: items,
@@ -107,7 +117,15 @@ export default class Gallery extends Component {
       <div key={url} className="ehv-card-no-padding">
         <img alt="gallery" onClick={() => this.setState({ fileViewer: url })} src={url} />
         {this.state.currentItems.some((item) => item.includes(fileUuid)) ? (
-          <Button onClick={() => this.setState({ modalAction: () => this.removeItem(fileUuid, url), showModal: true })} block>
+          <Button
+            onClick={() => {
+              let { modalOptions } = this.state;
+              modalOptions.callback = () => this.removeItem(fileUuid, url);
+              modalOptions.show = true;
+              this.setState({ modalOptions });
+            }}
+            block
+          >
             Verwijderen
           </Button>
         ) : null}
@@ -121,11 +139,12 @@ export default class Gallery extends Component {
     const result = await RemoveFile(fileUuid);
     if (result.status === 200) {
       URL.revokeObjectURL(objectUrl);
-      let { currentItems, galleryCards } = this.state;
+      let { currentItems, galleryCards, modalOptions } = this.state;
       currentItems = currentItems.filter((item) => !item.includes(fileUuid));
       galleryCards = galleryCards.filter((card) => card.key !== objectUrl);
 
-      this.setState({ currentItems, galleryCards, modalAction: null, showModal: false });
+      modalOptions.callback = null;
+      this.setState({ currentItems, galleryCards, modalOptions });
     }
   };
 
@@ -136,7 +155,15 @@ export default class Gallery extends Component {
       <div key={url} className="ehv-card-no-padding">
         <ReactPlayer style={{ width: "100%", height: "100%" }} className="gallery-video-player" url={url} controls={true} />
         {this.state.currentItems.some((item) => item.includes(fileUuid)) ? (
-          <Button onClick={() => this.setState({ modalAction: () => this.removeItem(fileUuid, url), showModal: true })} block>
+          <Button
+            onClick={() => {
+              let { modalOptions } = this.state;
+              modalOptions.callback = () => this.removeItem(fileUuid, url);
+              modalOptions.show = true;
+              this.setState({ modalOptions });
+            }}
+            block
+          >
             Verwijderen
           </Button>
         ) : null}
@@ -179,7 +206,15 @@ export default class Gallery extends Component {
             <h5>{directoryName}</h5>
           </div>
           {this.state.foldersOwnedByUser?.some((folderName) => folderName === directoryName) ? (
-            <Button onClick={() => this.onDirectoryRemove(directoryName)} block>
+            <Button
+              onClick={() => {
+                let { modalOptions } = this.state;
+                modalOptions.callback = () => this.onDirectoryRemove(directoryName);
+                modalOptions.show = true;
+                this.setState({ modalOptions });
+              }}
+              block
+            >
               Verwijderen
             </Button>
           ) : null}
@@ -298,19 +333,7 @@ export default class Gallery extends Component {
       <div>
         <Header pageName="Galerij" />
         <div className="content">
-          <ReactModal showModal={this.state.showModal} title="Item verwijderen" description="Weet je zeker dat je dit item wilt verwijderen?">
-            <Button variant="danger" onClick={this.state.modalAction}>
-              Verwijderen
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => {
-                this.setState({ showModal: false });
-              }}
-            >
-              Annuleren
-            </Button>
-          </ReactModal>
+          <ReactModal modalOptions={this.state.modalOptions} />
           <div id="gallery-options" className="mb-2" hidden={this.state.fileViewer !== null}>
             <Dropdown>
               <Dropdown.Toggle variant="primary">

@@ -1,8 +1,12 @@
-export function getFormData(formId) {
-  let object = {};
-  const formData = new FormData(document.getElementById(formId));
-  formData.forEach((value, key) => (object[key] = value));
-  return object;
+export function getFormDataObject(event) {
+  const formData = new FormData(event.target);
+  return Object.fromEntries(formData.entries());
+}
+
+export function getFormDataByIdObject(id) {
+  const form = document.getElementById(id);
+  const formData = new FormData(form);
+  return Object.fromEntries(formData.entries());
 }
 
 // return true if string is null, undefined, NaN, empty, 0, false

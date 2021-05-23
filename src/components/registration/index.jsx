@@ -7,8 +7,7 @@ import { toast } from "react-toastify";
 import { GetArtists } from "services/artists";
 import { GetHobbies } from "services/hobbies";
 import "./index.css";
-import CropperWrapper from "components/shared/cropper";
-import { getFormData, toggleSpinner } from "services/shared/form-data-helper";
+import { getFormDataObject, toggleSpinner } from "services/shared/form-data-helper";
 import { RegisterUser } from "services/user";
 import paths from "services/shared/router-paths";
 
@@ -19,7 +18,9 @@ export default class Registration extends Component {
 
     this.state = {
       selectableHobbies: [],
+      selectedHobbies: [],
       selectableArtists: [],
+      selectedArtists: [],
       uploadedImage: null,
       croppedImage: null,
       termsAndConditionOpen: false,
@@ -41,20 +42,27 @@ export default class Registration extends Component {
     }
   };
 
-  getFormData = () => {
-    let formData = getFormData("registration-form");
-    formData.avatar = this.cropper.current.getCroppedImage();
-    return formData;
+  formValid = (formData) => {
+    if (formData.password !== formData["repeat-password"]) {
+      toast.error("Wachtwoorden komen niet overeen");
+      toggleSpinner("registration-spinner", "registration-submit-btn");
+      return false;
+    }
+
+    return true;
   };
 
   onSubmit = async (e) => {
     e.preventDefault();
-    const formData = this.getFormData();
+    const { selectedArtists, selectedHobbies } = this.state;
+    let formData = getFormDataObject(e);
+    formData.receiveEmail = formData.receiveEmail === "on";
+
+    formData.hobbies = selectedHobbies.map((sh) => ({ hobby: sh }));
+    formData.favoriteArtists = selectedArtists.map((sa) => ({ artist: sa }));
     toggleSpinner("registration-spinner", "registration-submit-btn");
 
-    if (formData.password !== formData["repeat-password"]) {
-      toast.error("Wachtwoorden komen niet overeen");
-      toggleSpinner("registration-spinner", "registration-submit-btn");
+    if (!this.formValid(formData)) {
       return;
     }
 
@@ -72,7 +80,7 @@ export default class Registration extends Component {
     return (
       <div className="content" id="registration">
         <div id="registration-form-wrapper" className="ehv-card">
-          <Form onSubmit={this.onSubmit} id="registration-form">
+          <Form onSubmit={this.onSubmit}>
             <h1 className="text-center">Registeren</h1>
             <br />
             <p className="text-center">Verplichte velden</p>
@@ -111,12 +119,6 @@ export default class Registration extends Component {
               <small>Deze velden zijn niet verplicht, maar kunnen anderen wel helpen om jou beter te leren kennen</small>
             </p>
             <Form.Group>
-              <Form.Label>Profielfoto:</Form.Label>
-              <br />
-              <small>Als u geen foto kiest wordt er een automatisch een afbeelding gemaakt met de initialen van de gebruikersnaam</small>
-              <CropperWrapper ref={this.cropper} />
-            </Form.Group>
-            <Form.Group>
               <Form.Label>Over mij:</Form.Label>
               <Form.Control as="textarea" type="text" name="about" placeholder="Mijn passie is..." />
             </Form.Group>
@@ -124,17 +126,29 @@ export default class Registration extends Component {
               <Form.Label>Hobbies:</Form.Label>
               <br />
               <small>{`${this.state.selectableHobbies.length} opties`}</small>
-              <Typeahead id="registration-hobbies" multiple={true} options={this.state.selectableHobbies} placeholder="Stappen, film kijken" />
+              <Typeahead
+                id="registration-hobbies"
+                multiple={true}
+                options={this.state.selectableHobbies}
+                onChange={(e) => this.setState({ selectedHobbies: e })}
+                placeholder="Stappen, film kijken"
+              />
             </Form.Group>
             <Form.Group>
               <Form.Label>Favorieten artiesten:</Form.Label>
               <br />
               <small>{`${this.state.selectableArtists.length} opties`}</small>
-              <Typeahead id="registration-artist" multiple={true} options={this.state.selectableArtists} placeholder="Armin van Buuren, Lady Gaga" />
+              <Typeahead
+                id="registration-artist"
+                multiple={true}
+                options={this.state.selectableArtists}
+                onChange={(e) => this.setState({ selectedArtists: e })}
+                placeholder="Armin van Buuren, Lady Gaga"
+              />
             </Form.Group>
             <Form.Group controlId="registration-receive-email">
               <Form.Label>Emails ontvangen:</Form.Label>
-              <Form.Check id="registration-receive-email" defaultChecked type="checkbox" label="Emails ontvangen" />
+              <Form.Check id="registration-receive-email" name="receiveEmail" defaultChecked type="checkbox" label="Emails ontvangen" />
             </Form.Group>
 
             <b
