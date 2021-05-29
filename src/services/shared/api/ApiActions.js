@@ -1,4 +1,4 @@
-const gatewayUrl = "http://localhost:5000/";
+const gatewayUrl = process.env.GATEWAY_URL;
 
 const user = `${gatewayUrl}user`;
 const authenticate = `${gatewayUrl}authenticate`;
