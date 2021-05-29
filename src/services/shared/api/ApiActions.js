@@ -1,4 +1,4 @@
-const gatewayUrl = process.env.GATEWAY_URL;
+const gatewayUrl = process.env.REACT_APP_GATEWAY_URL;
 
 const user = `${gatewayUrl}user`;
 const authenticate = `${gatewayUrl}authenticate`;
