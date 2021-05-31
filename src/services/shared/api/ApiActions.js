@@ -1,4 +1,4 @@
-const gatewayUrl = process.env.REACT_APP_GATEWAY_URL;
+const gatewayUrl = "http://51.124.134.88/";
 
 const user = `${gatewayUrl}user`;
 const authenticate = `${gatewayUrl}authenticate`;
