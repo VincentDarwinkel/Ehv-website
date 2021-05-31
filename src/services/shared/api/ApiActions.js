@@ -1,4 +1,4 @@
-const gatewayUrl = "http://20.54.231.49//";
+const gatewayUrl = "http://20.54.231.49/";
 
 const user = `${gatewayUrl}user`;
 const authenticate = `${gatewayUrl}authenticate`;
