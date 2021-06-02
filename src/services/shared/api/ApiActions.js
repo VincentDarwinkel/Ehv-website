@@ -1,6 +1,7 @@
-const gatewayUrl = "http://20.54.231.49/";
+const gatewayUrl = "http://localhost:5000/";
 
 const user = `${gatewayUrl}user`;
+const accountRemoval = `${gatewayUrl}account-removal`;
 const authenticate = `${gatewayUrl}authenticate`;
 const dashboard = `${gatewayUrl}dashboard`;
 const event = `${gatewayUrl}event`;
@@ -18,6 +19,7 @@ const fileApiDirectory = `${gatewayUrl}directory`;
 
 const actions = {
   User: user,
+  AccountRemoval: accountRemoval,
   RefreshJwt: `${authenticate}/refresh`,
   Login: authenticate,
   ActivateAccount: `${user}/activate`,

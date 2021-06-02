@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import "./index.css";
 import { GetHobbies } from "services/hobbies";
 import { GetArtists } from "services/artists";
-import { GetUsersByUuid, UpdateUser } from "services/user";
+import { GetUsersByUuid, RemoveUserAccountInfo, UpdateUser } from "services/user";
 import { getClaim } from "services/jwt";
 import jwtClaims from "services/shared/jwt-claims";
 import Header from "components/shared/header";
@@ -12,6 +12,7 @@ import { Typeahead } from "react-bootstrap-typeahead";
 import { createGuid, getFormDataObject } from "services/shared/form-data-helper";
 import { toast } from "react-toastify";
 import Loading from "components/shared/loading";
+import Cookies from "universal-cookie";
 
 class Account extends Component {
   constructor(props) {
@@ -31,6 +32,16 @@ class Account extends Component {
       selectableArtists: [],
       selectableHobbies: [],
       user: userPlaceholder,
+      modalOptions: {
+        description: null,
+        show: false,
+        callback: null,
+        close: () => {
+          let modalOptions = this.state.modalOptions;
+          modalOptions.show = false;
+          this.setState({ modalOptions });
+        },
+      },
     };
   }
 
@@ -88,7 +99,7 @@ class Account extends Component {
       formData.favoriteArtists = selectedArtists.map((artist) => ({ uuid: createGuid(), userUuid, artist }));
     } else {
       formData.hobbies = user.hobbies;
-      formData.favoriteArtists = user.favoriteArtistsl;
+      formData.favoriteArtists = user.favoriteArtists;
     }
 
     const result = await UpdateUser(formData);
@@ -98,6 +109,16 @@ class Account extends Component {
     }
     if (result.status === 401) {
       toast.error("Onjuist wachtwoord ingevoerd");
+    }
+  };
+
+  removeAccount = async () => {
+    const options = ["userData", "datepickerData", "eventData", "mediaData"]; // temp let user select this in production
+    const result = await RemoveUserAccountInfo(options);
+    if (result.status === 200) {
+      const cookie = new Cookies();
+      cookie.remove("Jwt", { path: "/" });
+      window.location.pathname = "/login";
     }
   };
 
@@ -184,8 +205,23 @@ class Account extends Component {
                   <Form.Label>Wachtwoord:</Form.Label>
                   <Form.Control type="password" name="password" placeholder="Wachtwoord" required />
                 </Form.Group>
-                <Button block type="submit" id="registration-submit-btn">
+                <Button block className="mt-1" type="submit" id="registration-submit-btn">
                   Aanpassen
+                  <span className="spinner-border spinner-border-sm form-spinner" id="registration-spinner" role="status" />
+                </Button>
+                <Button
+                  block
+                  variant="danger"
+                  onClick={() => {
+                    modalOptions.show = true;
+                    modalOptions.callback = () => this.removeAccount();
+                    modalOptions.description = "Je account en alle andere informatie wordt verwijderd! Weet je het zeker?";
+                    this.setState({ modalOptions });
+                  }}
+                  className="mt-1"
+                  type="button"
+                >
+                  Gegevens verwijderen
                   <span className="spinner-border spinner-border-sm form-spinner" id="registration-spinner" role="status" />
                 </Button>
               </Form>

@@ -27,6 +27,10 @@ export const RemoveUser = (uuid) => {
   return sendRequest(() => Delete(`${ApiActions.User}?uuid=${uuid}`));
 };
 
+export const RemoveUserAccountInfo = (options) => {
+  return sendRequest(() => Delete(`${ApiActions.AccountRemoval}${arrayToQueryString(options, "options")}`));
+};
+
 export const ActivateUser = (code) => {
   return sendRequest(() => Post(`${ApiActions.ActivateAccount}?code=${code}`));
 };
