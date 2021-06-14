@@ -8,7 +8,7 @@
     "@testing-library/user-event": "^13.1.8",
     "@types/react": "*",
     "bootstrap": "*",
-    "chart.js": "*",
+    "chart.js": "3.3.0",
     "jquery": "*",
     "prettier-eslint": "*",
     "react": "17.0.2",
