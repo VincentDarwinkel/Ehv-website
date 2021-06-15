@@ -56,7 +56,7 @@ export default class Login extends Component {
     return (
       <section id="login">
         <div className="fade-down">
-          <h1 className="text-center">Welkom Ehv vrienden</h1>
+          <h1 className="text-center">Welkom Eindhovense vrienden</h1>
           <Form className="card" id="login-form" onSubmit={this.submitForm}>
             <h6>{this.test2}</h6>
             <h3 className="text-center">Login</h3>
