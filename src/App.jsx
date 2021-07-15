@@ -1,5 +1,5 @@
 import React from "react";
-import { ToastContainer } from "react-toastify";
+import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
@@ -12,7 +12,7 @@ Logger.configure({ level: "debug" });
 function App() {
   return (
     <div className="App">
-      <ToastContainer autoClose={4000} position="top-center" />
+      <ToastContainer autoClose={6000} position="bottom-center" transition={Slide} />
       <ReactModal />
       <Routes />
     </div>

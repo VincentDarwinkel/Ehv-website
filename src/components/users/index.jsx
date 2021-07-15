@@ -102,11 +102,10 @@ export default class Users extends Component {
   render() {
     return (
       <div>
-        <Header pageName="Gebruikers" />
+        <Header loading={this.state.cards === undefined} pageName="Gebruikers" />
         <ReactModal modalOptions={this.state.modalOptions} />
-
         <div className="fade-down content">
-          <div className="flex-row">{this.state.cards ?? <Loading />}</div>
+          <div className="flex-row">{this.state.cards}</div>
         </div>
       </div>
     );

@@ -41,9 +41,3 @@ export function disableForm(formId) {
   [].slice.call(form.getElementsByTagName("textarea")).forEach((textarea) => (textarea.disabled = true));
   [].slice.call(form.getElementsByTagName("button")).forEach((button) => (button.disabled = true));
 }
-
-export function toggleSpinner(spinnerId, buttonId) {
-  const currentState = document.getElementById(buttonId).disabled;
-  document.getElementById(spinnerId).style.display = currentState ? "none" : "inline-block";
-  document.getElementById(buttonId).disabled = !currentState;
-}

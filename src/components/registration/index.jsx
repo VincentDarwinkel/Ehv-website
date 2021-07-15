@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { GetArtists } from "services/artists";
 import { GetHobbies } from "services/hobbies";
 import "./index.css";
-import { getFormDataObject, toggleSpinner } from "services/shared/form-data-helper";
+import { getFormDataObject } from "services/shared/form-data-helper";
 import { RegisterUser } from "services/user";
 import paths from "services/shared/router-paths";
 
@@ -45,7 +45,6 @@ export default class Registration extends Component {
   formValid = (formData) => {
     if (formData.password !== formData["repeat-password"]) {
       toast.error("Wachtwoorden komen niet overeen");
-      toggleSpinner("registration-spinner", "registration-submit-btn");
       return false;
     }
 
@@ -60,7 +59,6 @@ export default class Registration extends Component {
 
     formData.hobbies = selectedHobbies.map((sh) => ({ hobby: sh }));
     formData.favoriteArtists = selectedArtists.map((sa) => ({ artist: sa }));
-    toggleSpinner("registration-spinner", "registration-submit-btn");
 
     if (!this.formValid(formData)) {
       return;
@@ -72,8 +70,6 @@ export default class Registration extends Component {
     } else if (result.status === 409) {
       toast.error("Er bestaat al een gebruiker met dit email adres of gebruikersnaam");
     }
-
-    toggleSpinner("registration-spinner", "registration-submit-btn");
   };
 
   render() {

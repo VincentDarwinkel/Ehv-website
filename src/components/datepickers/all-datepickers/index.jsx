@@ -1,7 +1,6 @@
 import "./index.css";
 import React, { Component } from "react";
 import Header from "components/shared/header";
-import Loading from "components/shared/loading";
 import { deleteDatepicker, getDatepickers } from "services/datepickers";
 import DatepickerCard from "./datepicker-card";
 import { getClaim } from "services/jwt";
@@ -16,7 +15,7 @@ export default class Datepickers extends Component {
   constructor() {
     super();
     this.state = {
-      datepickerCards: [],
+      datepickerCards: undefined,
       modalOptions: {
         description: null,
         show: false,
@@ -76,11 +75,10 @@ export default class Datepickers extends Component {
   render() {
     return (
       <div>
-        <Header pageName="Datumprikkers" />
+        <Header loading={this.state.datepickerCards === undefined} pageName="Datumprikkers" />
         <ReactModal modalOptions={this.state.modalOptions} />
-
         <div className="fade-down content">
-          <div className="flex-row">{this.state.datepickerCards ?? <Loading />}</div>
+          <div className="flex-row">{this.state.datepickerCards}</div>
         </div>
       </div>
     );

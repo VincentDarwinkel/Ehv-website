@@ -1,0 +1,9 @@
+#header {
+  height: 55px;
+}
+
+#header-loading {
+  position: fixed;
+  width: 100%;
+  z-index: 999;
+}

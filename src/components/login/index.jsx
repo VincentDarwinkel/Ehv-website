@@ -4,14 +4,16 @@ import { LoginUser } from "services/user";
 import React, { Component } from "react";
 import { toast } from "react-toastify";
 import routerPaths from "services/shared/router-paths";
-import { getFormDataObject, toggleSpinner } from "services/shared/form-data-helper";
+import { getFormDataObject } from "services/shared/form-data-helper";
 import { setAuthorizationCookie } from "services/shared/cookie";
+import Loading from "components/shared/loading";
 
 export default class Login extends Component {
   constructor() {
     super();
     this.state = {
       multiRoleData: null,
+      loading: false,
     };
   }
 
@@ -25,7 +27,7 @@ export default class Login extends Component {
 
   submitForm = async (e) => {
     e.preventDefault();
-    toggleSpinner("login-spinner", "login-submit-btn");
+    this.setState({ loading: true });
 
     let formData = getFormDataObject(e);
     formData.loginCode = Number(formData.loginCode);
@@ -33,13 +35,13 @@ export default class Login extends Component {
 
     if (result.status === 200) {
       const data = await result.json();
+      this.setState({ loading: false });
 
       if (this.state.multiRoleData !== null && data?.jwt !== undefined) {
         this.setJwt(data.jwt, data.refreshToken);
         return;
       } else if (data?.userHasMultipleAccountRoles) {
         this.setState({ multiRoleData: data });
-        toggleSpinner("login-spinner", "login-submit-btn");
         return;
       }
       this.setJwt(data.jwt, data.refreshToken);
@@ -49,7 +51,7 @@ export default class Login extends Component {
       toast.error("Dit account is uitgeschakeld, neem contact op met de beheerder");
     }
 
-    toggleSpinner("login-spinner", "login-submit-btn");
+    this.setState({ loading: false });
   };
 
   render() {
@@ -73,8 +75,8 @@ export default class Login extends Component {
             </Form.Group>
             <Button block type="submit" variant="secondary" id="login-submit-btn">
               Login
-              <span className="spinner-border spinner-border-sm form-spinner" id="login-spinner" role="status" />
             </Button>
+            {this.state.loading ? <Loading /> : null}
 
             <div id="login-actions">
               <a href={routerPaths.Registration} id="login-register">

@@ -7,19 +7,12 @@ import { getClaim } from "services/jwt";
 import jwtClaims from "services/shared/jwt-claims";
 import accountRoles from "services/shared/account-role";
 import { GetAllEvents } from "services/events";
-import roles from "services/shared/account-role";
 
 export default class Dashboard extends Component {
   constructor() {
     super();
     this.state = {
-      dashboardData: {
-        adminDashboard: {
-          users: [],
-          securityIncidents: [],
-          logs: [],
-        },
-      },
+      dashboardData: null,
     };
   }
 
@@ -77,13 +70,13 @@ export default class Dashboard extends Component {
   componentDidMount() {
     const userAccountRole = getClaim(jwtClaims.accountRole);
     switch (userAccountRole) {
-      case roles.User:
+      case accountRoles.User:
         this.getUserAndAdminDashboard();
         break;
-      case roles.Admin:
+      case accountRoles.Admin:
         this.getUserAndAdminDashboard();
         break;
-      case roles.SiteAdmin:
+      case accountRoles.SiteAdmin:
         break;
       default:
         break;
@@ -95,16 +88,16 @@ export default class Dashboard extends Component {
 
     return (
       <div>
-        <Header pageName="Dashboard" />
+        <Header loading={this.state.dashboardData === null} pageName="Dashboard" />
         <div className="content">
           {getClaim(jwtClaims.accountRole) === accountRoles.SiteAdmin ? (
             this.getSiteAdminDashboard()
           ) : (
             <div className="fade-down flex-row">
-              <EventCard title="Aangemelde evenementen" events={dashboardData.signedUpEvents} />
-              <EventCard title="Aankomende evenementen" events={dashboardData.upcomingEvents} cardType="top" />
-              <EventCard title="Vandaag" events={dashboardData.eventsToday} />
-              <EventCard title="Nieuwe berichten" messages={dashboardData.unreadMessages} />
+              <EventCard title="Aangemelde evenementen" events={dashboardData?.signedUpEvents} />
+              <EventCard title="Aankomende evenementen" events={dashboardData?.upcomingEvents} cardType="top" />
+              <EventCard title="Vandaag" events={dashboardData?.eventsToday} />
+              <EventCard title="Nieuwe berichten" messages={dashboardData?.unreadMessages} />
             </div>
           )}
         </div>

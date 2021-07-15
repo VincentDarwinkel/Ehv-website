@@ -1,111 +1,28 @@
 import React, { Component } from "react";
-import { Button, Form, ListGroup } from "react-bootstrap";
-import { toast } from "react-toastify";
-import { uploadFiles } from "services/file-dropper";
-import { createGuid } from "services/shared/form-data-helper";
 import "./index.css";
 import { isMobile } from "react-device-detect";
+import { Form, Table, Button } from "react-bootstrap";
+import { toast } from "react-toastify";
+import { uploadFiles } from "services/file-dropper";
 
 export default class FileDropper extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedFiles: [],
-      imagesToUpload: [],
-      uploadedFilesCount: 0,
-      displayFiles: true,
-      statuses: [],
-      fileUploadLimit: isMobile ? 20 : 40,
+      filesToUpload: [],
+      fileBlobUrls: [],
     };
   }
 
-  componentDidUpdate = () => {
-    const { uploadedFilesCount, selectedFiles } = this.state;
-    if (uploadedFilesCount !== 0 && uploadedFilesCount === selectedFiles.length) {
-      document.getElementById("fd-select-input").value = "";
-      let statuses = this.state.statuses;
-
-      if (!this.state.statuses.some((status) => status.includes("Fout"))) {
-        statuses.push("Upload voltooid");
-      }
-
-      this.props.onUploadComplete();
-      this.setState({ selectedFiles: [], imagesToUpload: [], uploadedFilesCount: 0, statuses });
-    }
-  };
-
   componentWillUnmount = () => {
-    if (this.timerHandle) {
-      // remove timeout to prevent memory leak
-      clearTimeout(this.timerHandle);
-      this.timerHandle = 0;
-    }
+    this.clearObjectUrls();
   };
 
-  compressImages = (images, callback) => {
-    images.forEach((image) => {
-      const objUrl = URL.createObjectURL(image);
-      let img = new Image();
-      img.crossOrigin = "Anonymous";
-      img.onload = function () {
-        let canvas = document.createElement("CANVAS");
-        let ctx = canvas.getContext("2d");
-        canvas.height = this.naturalHeight;
-        canvas.width = this.naturalWidth;
-        ctx.drawImage(this, 0, 0);
-
-        const dataURL = canvas.toDataURL("image/webp", 0.6);
-        callback(dataURL, image.name);
-      };
-
-      img.src = objUrl;
-
-      if (img.complete || img.complete === undefined) {
-        img.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
-        img.src = objUrl;
-      }
-    });
-  };
-
-  dataURLtoFile = (dataurl, filename) => {
-    var arr = dataurl.split(","),
-      mime = arr[0].match(/:(.*?);/)[1],
-      bstr = atob(arr[1]),
-      n = bstr.length,
-      u8arr = new Uint8Array(n);
-
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-
-    const image = new File([u8arr], filename, { type: mime });
-    let imagesToUpload = this.state.imagesToUpload;
-    imagesToUpload.push(image);
-    this.setState({ imagesToUpload }, this.onCompressionComplete);
-  };
-
-  onCompressionComplete = async () => {
-    let { imagesToUpload, selectedFiles, uploadedFilesCount, statuses } = this.state;
-    uploadedFilesCount += 1;
-
-    if (imagesToUpload.length === selectedFiles.filter((file) => file.type !== "video/mp4").length) {
-      const formData = new FormData();
-      formData.append("path", this.props.currentDirectory);
-      this.state.imagesToUpload.forEach((file) => {
-        formData.append("files", file);
-      });
-
-      const result = await uploadFiles(formData);
-      if (result.status === 200) {
-        statuses.push("Afbeeldingen geüpload");
-      } else {
-        statuses.push("Fout tijdens uploaden afbeeldingen");
-      }
-
-      this.setState({ statuses });
-    }
-
-    this.setState({ uploadedFilesCount });
+  clearObjectUrls = () => {
+    let { fileBlobUrls } = this.state;
+    fileBlobUrls.forEach((fileUrl) => URL.revokeObjectURL(fileUrl));
+    fileBlobUrls = [];
+    this.setState({ fileBlobUrls });
   };
 
   // filters the allowed files only and limits the amount of file to upload
@@ -114,153 +31,125 @@ export default class FileDropper extends Component {
     const files = Array.from(fileList);
     const maxFileSize = 26214400; //25 mb
 
-    return files.filter((file) => allowedFileTypes.includes(file.type) && file.size <= maxFileSize).splice(0, this.state.fileUploadLimit);
+    return files.filter((file) => allowedFileTypes.includes(file.type) && file.size <= maxFileSize);
   };
 
-  // check if user is using mobile data and show an warning if data size is big
-  checkUserConnection = () => {
-    if (navigator.connection) {
-      const type = navigator.connection.type;
-      if (type) {
-        if (type === "cellular") {
-          toast.warning(
-            "Waarschuwing je gebruikt mobiele data om bestanden te gaan uploaden dit kan kosten met zich meebrengen of je bundel snel leegtrekken!"
-          );
-        }
+  onFileUpload = (e) => {
+    e.preventDefault();
+    if (isMobile && e?.target?.files?.length > 150) {
+      toast.error("Telefoons kunnen niet meer dan 150 bestanden uploaden");
+      return;
+    }
+
+    document.getElementById("fd-select").style.display = "none";
+    const files = this.filterUploadedFiles(e.target.files);
+    if (files.length < e?.target?.files?.length) {
+      document.getElementById("fd-select").style.display = "inline-block";
+      toast.warning("Sommige bestanden zijn niet geüpload omdat deze groter dan 25MB zijn");
+
+      if (files.length === 0) {
+        return;
       }
     }
+
+    this.setState({ filesToUpload: files });
+    document.getElementById("fd-upload-btn").hidden = false;
   };
 
-  onFileSelection = (e) => {
-    this.checkUserConnection();
-    const selectedFiles = this.filterUploadedFiles(e.target.files);
-    if (selectedFiles.length !== e.target.files.length) {
-      toast.error("Sommige bestanden zijn niet toegevoegd omdat deze niet geüpload kunnen worden");
+  generatePreview = (file) => {
+    const objUrl = URL.createObjectURL(file);
+    let { fileBlobUrls } = this.state;
+    fileBlobUrls.push(objUrl);
+
+    if (file?.type === "video/mp4") {
+      return <video className="fd-preview" src={objUrl} />;
     }
 
-    this.setState({ selectedFiles });
+    return <img className="fd-preview" src={objUrl} />;
   };
 
-  onRemove = (fileName) => {
-    let selectedFiles = this.state.selectedFiles;
-    const fileIndex = selectedFiles.findIndex((file) => file.name === fileName);
-    if (fileIndex !== -1) {
-      selectedFiles.splice(fileIndex, 1);
-      this.setState({ selectedFiles });
+  deletePreview = (file) => {
+    let { filesToUpload } = this.state;
+    const indexToRemove = filesToUpload.findIndex((item) => item?.name === file?.name);
+    if (indexToRemove !== -1) {
+      filesToUpload.splice(indexToRemove, 1);
     }
-    if (selectedFiles.length === 0) {
-      document.getElementById("fd-select-input").value = "";
-    }
-  };
 
-  uploadVideos = async (selectedVideos) => {
-    if (selectedVideos.length !== 0) {
-      const formData = new FormData();
-      selectedVideos.forEach((video) => formData.append("files", video));
-
-      let statuses = this.state.statuses;
-      const result = await uploadFiles(formData, `?path=${this.props.currentDirectory}`);
-      if (result.status === 200) {
-        statuses.push("Video's geüpload");
-      } else {
-        statuses.push("Fout tijdens uploaden video");
-      }
-
-      this.setState({
-        uploadedFilesCount: (this.state.uploadedFilesCount += selectedVideos.length),
-        statuses,
-      });
+    this.setState({ filesToUpload });
+    if (filesToUpload.length === 0) {
+      document.getElementById("fd-select").style.display = "inline-block";
+      document.getElementById("fd-file-input").value = "";
+      document.getElementById("fd-upload-btn").hidden = true;
     }
   };
 
-  onUpload = async () => {
-    this.setState({ statuses: [] });
+  upload = () => {
+    this.clearObjectUrls();
+    const { filesToUpload } = this.state;
 
-    const selectedImages = this.state.selectedFiles.filter((file) => file.type !== "video/mp4");
-    const selectedVideos = this.state.selectedFiles.filter((file) => file.type === "video/mp4");
-
-    this.compressImages(selectedImages, this.dataURLtoFile);
-    await this.uploadVideos(selectedVideos);
+    let formData = new FormData();
+    formData.append("path", "/Media/Public/Gallery/2021");
+    filesToUpload.forEach((file) => formData.append("files", file));
+    uploadFiles(formData);
   };
 
   render() {
     return (
-      <div id="file-dropper" hidden={this.props.hidden}>
-        <label className="btn btn-light">
-          Bestanden kiezen <i className="fas fa-photo-video" />
+      <div className="ehv-card-no-padding" id="fd-wrapper">
+        <label className="btn btn-light mt-4 mb-4" id="fd-select">
+          <i className="fas fa-plus" />
+          <span className="m-1">Voeg bestanden toe</span>
           <Form.Control
-            multiple={true}
-            accept=".png, .jpg, .webp, .jpeg, .mp4"
+            id="fd-file-input"
+            multiple={false}
+            accept=".mp4,.webp.,webm,.png,.jpeg,.jpg,.mov,.avi"
             className="d-none"
             type="file"
-            onChange={(e) => this.onFileSelection(e)}
-            id="fd-select-input"
+            onChange={(e) => this.onFileUpload(e)}
+            multiple
           />
         </label>
-        <br />
-        <small>
-          Maximale bestandsgrootte 25 MB
-          <br />
-          Maximaal aantal bestanden {this.state.fileUploadLimit}
-        </small>
-        <br />
-        <div hidden={this.state.selectedFiles.length === 0 && this.state.statuses.length === 0}>
-          <b
-            style={{ cursor: "pointer", color: "white" }}
-            onClick={() => this.setState({ displayFiles: !this.state.displayFiles })}
-            aria-controls="collapse-text"
-            aria-expanded={this.state.displayFiles}
-          >
-            {this.state.displayFiles ? (
-              <span>
-                Verberg bestanden ({this.state.selectedFiles.length - this.state.uploadedFilesCount}) <i className="fas fa-sort-up" />
-              </span>
-            ) : (
-              <span>
-                Weergeef bestanden <i className="fas fa-sort-down" />
-              </span>
-            )}
-          </b>
-          <div hidden={!this.state.displayFiles} className="fade-down">
-            <div id="selected-files">
-              {this.state.selectedFiles.map((file) => (
-                <div key={createGuid()} className="selected-file ehv-card">
+        <Table striped bordered hover responsive variant="dark" size="sm">
+          <thead>
+            <tr>
+              <th style={{ width: "5%" }}>#</th>
+              <th style={{ width: "10%" }}>Preview</th>
+              <th>Bestandsnaam</th>
+              <th style={{ width: "6%" }}>Type</th>
+              <th style={{ width: "6%" }}>Grootte</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.state.filesToUpload.map((file, index) => (
+              <tr className="fade-down">
+                <td>{index + 1}</td>
+                <td>{this.generatePreview(file)}</td>
+                <td>{file.name}</td>
+                <td>
                   {file.type === "video/mp4" ? (
-                    <video src={URL.createObjectURL(file)} />
+                    <div>
+                      <i className="fas fa-video" />
+                      <br /> Video
+                    </div>
                   ) : (
-                    <img alt="Upload" loading="lazy" src={URL.createObjectURL(file)} />
+                    <div>
+                      <i className="fas fa-camera" />
+                      <br /> Image
+                    </div>
                   )}
-                  <div className="fd-option-wrapper">
-                    {file.type === "video/mp4" ? <i className="fas fa-video" /> : <i className="far fa-image" />} {file.name}
-                  </div>
-                  <Button onClick={() => this.onRemove(file.name)} className="fd-remove">
-                    <i className="fas fa-times" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-            <div id="fd-upload-section">
-              <Button disabled={this.state.uploadedFilesCount !== 0} onClick={(e) => this.onUpload(e)} block>
-                Upload {this.state.uploadedFilesCount !== 0 ? `(${this.state.uploadedFilesCount})` : null}
-              </Button>
-              <ListGroup>
-                {this.state.statuses.map((event) => (
-                  <ListGroup.Item key={createGuid()}>
-                    {event.includes("Fout") ? (
-                      <span>
-                        <i className="fas fa-exclamation-triangle" /> {event}
-                      </span>
-                    ) : (
-                      <span>
-                        <i className="fas fa-check" /> {event}
-                      </span>
-                    )}
-                  </ListGroup.Item>
-                ))}
-              </ListGroup>
-            </div>
-          </div>
-        </div>
+                </td>
+                <td>{Math.round((file?.size / 1000000) * 100) / 100}MB</td>
+                <td>
+                  <i onClick={() => this.deletePreview(file)} className="fas fa-trash-alt btn" style={{ color: "red" }} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+        <Button onClick={this.upload} id="fd-upload-btn" hidden className="w-100">
+          Uploaden
+        </Button>
       </div>
     );
   }

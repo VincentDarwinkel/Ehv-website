@@ -1,47 +1,8 @@
-#file-dropper {
-  width: fit-content;
+#fd-wrapper table {
+  text-align: center;
 }
 
-#selected-files {
-  min-width: 100%;
-}
-
-.selected-file {
-  display: flex;
-  margin: 2px;
-}
-
-.selected-file button {
-  height: 35px;
-  margin-left: auto;
-}
-
-.fd-option-wrapper {
-  display: inline-block;
-  margin-left: 5px;
-}
-
-.selected-file img {
-  height: inherit;
-  max-height: 150px;
-  width: 12%;
-  max-width: 150px;
-}
-
-.selected-file video {
-  height: inherit;
-  max-height: 150px;
-  width: 12%;
-  image-rendering: pixelated;
-}
-
-.fd-remove {
-  float: right;
-}
-
-#fd-upload-section {
-  height: 100%;
-  width: 100%;
-  position: sticky;
-  bottom: 0;
+.fd-preview {
+  width: auto;
+  height: 200px;
 }

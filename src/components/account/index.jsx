@@ -127,108 +127,104 @@ class Account extends Component {
 
     return (
       <div>
-        <Header pageName="Account" />
+        <Header loading={user.email === undefined} pageName="Account" />
         <ReactModal modalOptions={modalOptions} />
         <div className="fade-down content" id="account">
-          {user.email !== undefined ? (
-            <div className="ehv-card">
-              <Form onSubmit={this.onSubmit}>
-                <Form.Group>
-                  <Form.Label>Gebruikersnaam:</Form.Label>
-                  <Form.Control type="text" name="username" defaultValue={user?.username} placeholder="Gebruikersnaam" required />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label>Email:</Form.Label>
-                  <Form.Control type="email" name="email" defaultValue={user?.email} placeholder="Email" required />
-                </Form.Group>
+          <div className="ehv-card">
+            <Form onSubmit={this.onSubmit}>
+              <Form.Group>
+                <Form.Label>Gebruikersnaam:</Form.Label>
+                <Form.Control type="text" name="username" defaultValue={user?.username} placeholder="Gebruikersnaam" required />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Email:</Form.Label>
+                <Form.Control type="email" name="email" defaultValue={user?.email} placeholder="Email" required />
+              </Form.Group>
+              <br />
+              <p className="text-center">Wachtwoord wijzigen</p>
+              <hr />
+              <Form.Group>
+                <Form.Label>Nieuw Wachtwoord:</Form.Label>
+                <Form.Control type="password" name="newPassword" placeholder="Wachtwoord" />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Herhaal wachtwoord:</Form.Label>
+                <Form.Control type="password" name="repeatPassword" placeholder="Herhaal wachtwoord" />
+              </Form.Group>
+              <hr />
+              <p className="text-center">
+                Optionele velden
                 <br />
-                <p className="text-center">Wachtwoord wijzigen</p>
-                <hr />
-                <Form.Group>
-                  <Form.Label>Nieuw Wachtwoord:</Form.Label>
-                  <Form.Control type="password" name="newPassword" placeholder="Wachtwoord" />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label>Herhaal wachtwoord:</Form.Label>
-                  <Form.Control type="password" name="repeatPassword" placeholder="Herhaal wachtwoord" />
-                </Form.Group>
-                <hr />
-                <p className="text-center">
-                  Optionele velden
-                  <br />
-                  <small>Deze velden zijn niet verplicht, maar kunnen anderen wel helpen om jou beter te leren kennen</small>
-                </p>
-                <Form.Group>
-                  <Form.Label>Over mij:</Form.Label>
-                  <Form.Control as="textarea" type="text" name="about" defaultValue={user?.about} placeholder="Mijn passie is..." />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label>Hobbies:</Form.Label>
-                  <br />
-                  <small>{`${selectableHobbies?.length} opties`}</small>
-                  <Typeahead
-                    key={createGuid()}
-                    id={createGuid()}
-                    multiple={true}
-                    options={selectableHobbies}
-                    defaultSelected={selectedHobbies}
-                    onChange={(e) => this.setState({ selectedHobbies: e })}
-                    placeholder="Stappen, film kijken"
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label>Favorieten artiesten:</Form.Label>
-                  <br />
-                  <small>{`${selectableArtists?.length} opties`}</small>
-                  <Typeahead
-                    key={createGuid()}
-                    id={createGuid()}
-                    multiple={true}
-                    options={selectableArtists}
-                    defaultSelected={selectedArtists}
-                    onChange={(e) => this.setState({ selectedArtists: e })}
-                    placeholder="Armin van Buuren, Lady Gaga"
-                  />
-                </Form.Group>
-                <Form.Group controlId="registration-receive-email">
-                  <Form.Label>Emails ontvangen:</Form.Label>
-                  <Form.Check
-                    id="registration-receive-email"
-                    defaultChecked={user?.receiveEmail}
-                    name="receiveEmail"
-                    type="checkbox"
-                    label="Emails ontvangen"
-                  />
-                </Form.Group>
-                <hr />
-                <Form.Group>
-                  <Form.Label>Wachtwoord:</Form.Label>
-                  <Form.Control type="password" name="password" placeholder="Wachtwoord" required />
-                </Form.Group>
-                <Button block className="mt-1" type="submit" id="registration-submit-btn">
-                  Aanpassen
-                  <span className="spinner-border spinner-border-sm form-spinner" id="registration-spinner" role="status" />
-                </Button>
-                <Button
-                  block
-                  variant="danger"
-                  onClick={() => {
-                    modalOptions.show = true;
-                    modalOptions.callback = () => this.removeAccount();
-                    modalOptions.description = "Je account en alle andere informatie wordt verwijderd! Weet je het zeker?";
-                    this.setState({ modalOptions });
-                  }}
-                  className="mt-1"
-                  type="button"
-                >
-                  Gegevens verwijderen
-                  <span className="spinner-border spinner-border-sm form-spinner" id="registration-spinner" role="status" />
-                </Button>
-              </Form>
-            </div>
-          ) : (
-            <Loading />
-          )}
+                <small>Deze velden zijn niet verplicht, maar kunnen anderen wel helpen om jou beter te leren kennen</small>
+              </p>
+              <Form.Group>
+                <Form.Label>Over mij:</Form.Label>
+                <Form.Control as="textarea" type="text" name="about" defaultValue={user?.about} placeholder="Mijn passie is..." />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Hobbies:</Form.Label>
+                <br />
+                <small>{`${selectableHobbies?.length} opties`}</small>
+                <Typeahead
+                  key={createGuid()}
+                  id={createGuid()}
+                  multiple={true}
+                  options={selectableHobbies}
+                  defaultSelected={selectedHobbies}
+                  onChange={(e) => this.setState({ selectedHobbies: e })}
+                  placeholder="Stappen, film kijken"
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Favorieten artiesten:</Form.Label>
+                <br />
+                <small>{`${selectableArtists?.length} opties`}</small>
+                <Typeahead
+                  key={createGuid()}
+                  id={createGuid()}
+                  multiple={true}
+                  options={selectableArtists}
+                  defaultSelected={selectedArtists}
+                  onChange={(e) => this.setState({ selectedArtists: e })}
+                  placeholder="Armin van Buuren, Lady Gaga"
+                />
+              </Form.Group>
+              <Form.Group controlId="registration-receive-email">
+                <Form.Label>Emails ontvangen:</Form.Label>
+                <Form.Check
+                  id="registration-receive-email"
+                  defaultChecked={user?.receiveEmail}
+                  name="receiveEmail"
+                  type="checkbox"
+                  label="Emails ontvangen"
+                />
+              </Form.Group>
+              <hr />
+              <Form.Group>
+                <Form.Label>Wachtwoord:</Form.Label>
+                <Form.Control type="password" name="password" placeholder="Wachtwoord" required />
+              </Form.Group>
+              <Button block className="mt-1" type="submit" id="registration-submit-btn">
+                Aanpassen
+                <span className="spinner-border spinner-border-sm form-spinner" id="registration-spinner" role="status" />
+              </Button>
+              <Button
+                block
+                variant="danger"
+                onClick={() => {
+                  modalOptions.show = true;
+                  modalOptions.callback = () => this.removeAccount();
+                  modalOptions.description = "Je account en alle andere informatie wordt verwijderd! Weet je het zeker?";
+                  this.setState({ modalOptions });
+                }}
+                className="mt-1"
+                type="button"
+              >
+                Gegevens verwijderen
+                <span className="spinner-border spinner-border-sm form-spinner" id="registration-spinner" role="status" />
+              </Button>
+            </Form>
+          </div>
         </div>
       </div>
     );

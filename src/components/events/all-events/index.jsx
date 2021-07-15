@@ -6,7 +6,6 @@ import Header from "components/shared/header";
 import EventCard from "./event-card";
 import jwtClaims from "services/shared/jwt-claims";
 import routerPaths from "services/shared/router-paths";
-import Loading from "components/shared/loading";
 
 export default class Events extends Component {
   constructor(props) {
@@ -75,9 +74,9 @@ export default class Events extends Component {
   render() {
     return (
       <div>
-        <Header pageName="Events" />
+        <Header loading={this.state.eventCards === null} pageName="Events" />
         <div className="fade-down content">
-          <div className="flex-row">{this.state.eventCards ?? <Loading />}</div>
+          <div className="flex-row">{this.state.eventCards}</div>
         </div>
       </div>
     );
