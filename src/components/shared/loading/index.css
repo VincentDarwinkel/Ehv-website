@@ -13,7 +13,7 @@
   content: "";
   position: absolute;
   height: 100%;
-  background-color: cornflowerblue;
+  background-color: rgb(104, 69, 150);
   animation: indeterminate_first 1.5s infinite ease-out;
 }
 

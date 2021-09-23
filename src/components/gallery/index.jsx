@@ -1,408 +1,178 @@
-import React, { Component } from "react";
 import "./index.css";
 import Header from "components/shared/header";
-import FileDropper from "components/shared/file-dropper";
-import { GetFile, GetFileNamesFromDirectory, GetDirectoryInfo, RemoveFile, RemoveDirectory } from "services/gallery";
-import ReactPlayer from "react-player";
-import { Button, Dropdown } from "react-bootstrap";
+import { GetDirectoryInfo, GetFile, RemoveDirectory, RemoveFile } from "services/gallery";
+import React, { useState, useEffect } from "react";
 import ReactModal from "components/shared/modal";
-import EmptyFolder from "components/shared/empty-folder";
-import DirectoryCreator from "components/shared/directory-creator";
-import { getClaim } from "services/jwt";
-import jwtClaims from "services/shared/jwt-claims";
+import FileDropper from "components/shared/file-dropper";
+import Directory from "./directory";
+import MediaItem from "./media";
+import MediaViewer from "./media-viewer";
+import { Pagination } from "react-bootstrap";
+import { stringIsNullOrEmpty } from "services/shared/form-data-helper";
 
-export default class Gallery extends Component {
-  constructor() {
-    super();
-    this.state = {
-      currentDirectory: "/public/gallery/",
-      currentItems: [],
-      galleryCards: [],
-      filesOwnedByUser: [],
-      foldersOwnedByUser: [],
-      fileViewer: null,
-      hideVideoView: true,
-      xDown: null,
-      yDown: null,
-      showedOption: null,
-      directoryContainsFile: false,
-      directoryContainsFolder: false,
-      modalOptions: {
-        description: "Weet je zeker dat je dit item wilt verwijderen?",
-        show: false,
-        callback: () => null,
-        close: () => {
-          let modalOptions = this.state.modalOptions;
-          modalOptions.show = false;
-          this.setState({ modalOptions });
-        },
-      },
-    };
-  }
+export default function Gallery() {
+  const [currentDirectory, setCurrentDirectory] = useState("/Media/Public/Gallery");
+  const [currentItems, setCurrentItems] = useState([]);
+  const [mediaViewerData, setMediaViewerData] = useState({
+    hidden: true,
+    currentItemsIndex: -1,
+    currentItems,
+  });
 
-  componentDidMount = () => {
-    this.getDirectoryData();
-  };
+  const [, updateState] = React.useState();
+  const forceUpdate = React.useCallback(() => updateState({}), []);
+  const [modalOptions, setModalOptions] = useState({
+    description: null,
+    show: false,
+    callback: () => null,
+    close: () => {
+      let options = modalOptions;
+      options.show = false;
+      setModalOptions(options);
+      forceUpdate();
+    },
+  });
 
-  getTouches = (evt) => {
-    return (
-      evt.touches || // browser API
-      evt.originalEvent.touches
-    ); // jQuery
-  };
+  useEffect(() => {
+    getDirectoryData();
+  }, []);
 
-  handleTouchStart = (evt) => {
-    const firstTouch = this.getTouches(evt)[0];
-    const xDown = firstTouch.clientX;
-    const yDown = firstTouch.clientY;
-    this.setState({ xDown, yDown });
-  };
-
-  handleTouchMove = (evt) => {
-    let { xDown, yDown } = this.state;
-    if (!xDown || !yDown) {
-      return;
+  const getDirectoryData = async (directory = null) => {
+    if (directory !== null) {
+      sessionStorage.setItem("currentDir", directory);
+      setCurrentDirectory(directory);
     }
 
-    var xUp = evt.touches[0].clientX;
-    var yUp = evt.touches[0].clientY;
-
-    var xDiff = xDown - xUp;
-    var yDiff = yDown - yUp;
-
-    if (Math.abs(xDiff) > Math.abs(yDiff)) {
-      /*most significant*/
-      if (xDiff > 0) {
-        this.handleFileViewerCommand("next");
-      } else {
-        this.handleFileViewerCommand("previous");
-      }
-    } else {
-      this.handleFileViewerCommand("close");
-    }
-
-    /* reset values */
-    xDown = null;
-    yDown = null;
-
-    this.setState({ xDown, yDown });
-  };
-
-  getDirectoryData = async () => {
-    this.setState({ directoryContainsFile: false, directoryContainsFolder: false });
-
-    const filesResponse = await GetFileNamesFromDirectory(this.state.currentDirectory);
-    const directoryInfoResponse = await GetDirectoryInfo(this.state.currentDirectory);
-
-    if (filesResponse.status === 200 || directoryInfoResponse.status === 200) {
-      const items = await filesResponse.json();
+    const directoryInfoResponse = await GetDirectoryInfo(directory === null ? currentDirectory : directory);
+    if (directoryInfoResponse.status === 200) {
       const directoryInfo = await directoryInfoResponse.json();
+      setCurrentItems(directoryInfo);
 
-      const uuid = getClaim(jwtClaims.uuid);
-      this.setState(
-        {
-          currentItems: items,
-          filesOwnedByUser: directoryInfo?.filesOwnedByUser,
-          foldersOwnedByUser: directoryInfo?.directoryContentInfo?.find((dci) => dci.ownerUuid === uuid)?.directoriesOwnedByUser,
-        },
-        this.renderGalleryData
-      );
-    }
-  };
-
-  renderImageCard = (image, fileUuid) => {
-    let { galleryCards } = this.state;
-    const url = URL.createObjectURL(image);
-    galleryCards.push(
-      <div key={url} className="ehv-card-no-padding">
-        <img alt="gallery" onClick={() => this.setState({ fileViewer: url })} src={url} />
-        {this.state.currentItems.some((item) => item.includes(fileUuid)) ? (
-          <Button
-            onClick={() => {
-              let { modalOptions } = this.state;
-              modalOptions.callback = () => this.removeItem(fileUuid, url);
-              modalOptions.show = true;
-              this.setState({ modalOptions });
-            }}
-            block
-          >
-            Verwijderen
-          </Button>
-        ) : null}
-      </div>
-    );
-
-    this.setState({ galleryCards });
-  };
-
-  removeItem = async (fileUuid, objectUrl) => {
-    const result = await RemoveFile(fileUuid);
-    if (result.status === 200) {
-      URL.revokeObjectURL(objectUrl);
-      let { currentItems, galleryCards, modalOptions } = this.state;
-      currentItems = currentItems.filter((item) => !item.includes(fileUuid));
-      galleryCards = galleryCards.filter((card) => card.key !== objectUrl);
-
-      modalOptions.callback = null;
-      this.setState({ currentItems, galleryCards, modalOptions });
-    }
-  };
-
-  renderVideoCard = (video, fileUuid) => {
-    let { galleryCards } = this.state;
-    const url = URL.createObjectURL(video);
-    galleryCards.push(
-      <div key={url} className="ehv-card-no-padding">
-        <ReactPlayer style={{ width: "100%", height: "100%" }} className="gallery-video-player" url={url} controls={true} />
-        {this.state.currentItems.some((item) => item.includes(fileUuid)) ? (
-          <Button
-            onClick={() => {
-              let { modalOptions } = this.state;
-              modalOptions.callback = () => this.removeItem(fileUuid, url);
-              modalOptions.show = true;
-              this.setState({ modalOptions });
-            }}
-            block
-          >
-            Verwijderen
-          </Button>
-        ) : null}
-      </div>
-    );
-
-    this.setState({ galleryCards });
-  };
-
-  onDirectoryCardClick = (directoryName) => {
-    let { currentDirectory, galleryCards } = this.state;
-    galleryCards.forEach((card) => {
-      // clear previous files
-      URL.revokeObjectURL(card.key);
-    });
-
-    currentDirectory = `${currentDirectory}${directoryName}/`;
-    this.setState({ currentDirectory, currentItems: [], galleryCards: [] }, this.getDirectoryData);
-  };
-
-  onDirectoryRemove = async (directoryName) => {
-    const result = await RemoveDirectory(this.state.currentDirectory + directoryName);
-    if (result.status === 200) {
-      let { currentItems, galleryCards } = this.state;
-      currentItems = currentItems.filter((ci) => ci !== directoryName);
-      galleryCards = galleryCards.filter((gc) => gc.key !== directoryName);
-
-      this.setState({ currentItems, galleryCards });
-    }
-  };
-
-  generateDirectoryCards = (directories) => {
-    this.setState({ directoryContainsFolder: true });
-    let directoryCards = [];
-    directories.forEach((directoryName) => {
-      directoryCards.push(
-        <div key={directoryName}>
-          <div onClick={() => this.onDirectoryCardClick(directoryName)} className="ehv-card directory-card">
-            <i className="fas fa-folder" />
-            <h5>{directoryName}</h5>
-          </div>
-          {this.state.foldersOwnedByUser?.some((folderName) => folderName === directoryName) ? (
-            <Button
-              onClick={() => {
-                let { modalOptions } = this.state;
-                modalOptions.callback = () => this.onDirectoryRemove(directoryName);
-                modalOptions.show = true;
-                this.setState({ modalOptions });
-              }}
-              block
-            >
-              Verwijderen
-            </Button>
-          ) : null}
-        </div>
-      );
-    });
-
-    this.setState({ galleryCards: directoryCards });
-  };
-
-  generateFileCard = (file, type, fileName) => {
-    let { directoryContainsFile } = this.props;
-    if (!directoryContainsFile) {
-      directoryContainsFile = true;
-      this.setState({ directoryContainsFile });
-    }
-
-    if (type === "image") {
-      file.blob().then((value) => {
-        this.renderImageCard(value, fileName);
-      });
-    } else {
-      file.blob().then((value) => {
-        this.renderVideoCard(value, fileName);
-      });
-    }
-  };
-
-  renderGalleryData = () => {
-    const items = this.state.currentItems;
-    const firstFileType = items[0];
-    if (firstFileType === undefined) {
-      return;
-    }
-
-    if (firstFileType.includes(".webp") || firstFileType.includes(".mp4")) {
-      const callback = this.generateFileCard;
-      items.forEach((fileName) => {
-        const fileType = fileName.includes(".webp") ? "image" : "video";
-        const fileUuid = fileName.replace(".webp", "").replace(".mp4", "");
-        GetFile(fileUuid).then((value) => {
-          callback(value, fileType, fileUuid);
+      if (!directoryInfo[0]?.isDirectory) {
+        const callback = generateFilePreviewUrl;
+        directoryInfo.forEach((di) => {
+          GetFile(di.uuid).then((value) => {
+            if (directory !== sessionStorage.getItem("currentDir")) {
+              return;
+            }
+            callback(value, di, directoryInfo, directory);
+          });
         });
-      });
-    } else {
-      this.generateDirectoryCards(items);
-    }
-  };
-
-  handleFileViewerCommand = (action) => {
-    let { galleryCards, fileViewer } = this.state;
-    const previewFileIndex = galleryCards.findIndex((card) => card.key === fileViewer);
-    let nextFile = null;
-
-    if (previewFileIndex === -1) {
-      return;
-    }
-
-    switch (action) {
-      case "previous":
-        if (previewFileIndex === 0) {
-          return;
-        }
-
-        nextFile = galleryCards[previewFileIndex - 1].key;
-        break;
-      case "next":
-        if (previewFileIndex === galleryCards.length - 1) {
-          return;
-        }
-
-        nextFile = galleryCards[previewFileIndex + 1].key;
-        break;
-      case "close":
-        break;
-      default:
-        break;
-    }
-
-    this.setState({ fileViewer: nextFile, hideVideoView: false });
-  };
-
-  onKeyDown = (e) => {
-    const supportedKeys = ["ArrowRight", "ArrowLeft", "Escape"];
-
-    if (this.state.fileViewer !== null && supportedKeys.includes(e.key)) {
-      switch (e.key) {
-        case "ArrowRight":
-          this.handleFileViewerCommand("next");
-          break;
-
-        case "ArrowLeft":
-          this.handleFileViewerCommand("previous");
-          break;
-
-        case "Escape":
-          this.handleFileViewerCommand("close");
-          break;
-
-        default:
-          break;
       }
     }
   };
 
-  loadPreviousDirectory = () => {
-    let { currentDirectory } = this.state;
-    const folders = currentDirectory.split("/").filter((f) => f !== "");
-    currentDirectory = currentDirectory.replace(`${folders[folders.length - 1]}/`, "");
-
-    this.setState({ currentDirectory }, this.getDirectoryData);
+  const generateFilePreviewUrl = (file, fileInfo, directoryInfo, currentDir) => {
+    file.blob().then((value) => renderPreviewUrl(value, fileInfo, directoryInfo, currentDir));
   };
 
-  render() {
-    return (
-      <div>
-        <Header pageName="Galerij" />
-        <div className="content">
-          <ReactModal modalOptions={this.state.modalOptions} />
-          <div id="gallery-options" className="mb-2" hidden={this.state.fileViewer !== null}>
-            <Dropdown>
-              <Dropdown.Toggle variant="primary">
-                Acties <li className="fas fa-pen" />
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-                {this.state.showedOption !== null ? (
-                  <Dropdown.Item onClick={() => this.setState({ showedOption: null })}>
-                    <i className="far fa-eye-slash" /> Opties verbergen
-                  </Dropdown.Item>
-                ) : null}
+  const renderPreviewUrl = async (file, fileInfo, directoryInfo, currentDir) => {
+    let url = null;
+    if (fileInfo.fileType === "Video") {
+      const buf = await file.arrayBuffer();
+      url = URL.createObjectURL(new Blob([buf]));
+    } else {
+      url = URL.createObjectURL(file);
+    }
 
-                {!this.state.directoryContainsFolder ? (
-                  <Dropdown.Item onClick={() => this.setState({ showedOption: "fileDropper" })}>
-                    <i className="fas fa-photo-video" /> Bestanden uploaden
-                  </Dropdown.Item>
-                ) : null}
+    let items = directoryInfo;
+    const index = items.findIndex((i) => i.uuid === fileInfo.uuid);
+    if (index === -1) {
+      return;
+    }
 
-                {!this.state.directoryContainsFile ? (
-                  <Dropdown.Item onClick={() => this.setState({ showedOption: "directoryCreator" })}>
-                    <i className="fas fa-folder-plus" /> Map aanmaken
-                  </Dropdown.Item>
-                ) : null}
-              </Dropdown.Menu>
-            </Dropdown>
-            <br />
-            <Button onClick={this.loadPreviousDirectory} disabled={this.state.currentDirectory === "/public/gallery/"}>
-              <i className="fas fa-arrow-left" />
-            </Button>
+    items[index].previewUrl = url;
+    setCurrentItems(items);
+    forceUpdate();
+  };
+
+  const removeItem = (uuid) => {
+    let items = currentItems;
+    const index = items.findIndex((i) => i.uuid === uuid);
+    if (index === -1) {
+      return;
+    }
+
+    const itemToRemove = items[index];
+    itemToRemove?.isDirectory ? RemoveDirectory(itemToRemove.uuid) : RemoveFile(itemToRemove.uuid);
+
+    items.splice(index, 1);
+    setCurrentItems(items);
+    forceUpdate();
+  };
+
+  const onMediaItemClick = (uuid) => {
+    const index = currentItems.findIndex((ci) => ci.uuid === uuid);
+    if (index === -1) {
+      return;
+    }
+
+    setMediaViewerData({
+      hidden: false,
+      currentItems,
+      currentItemsIndex: index,
+    });
+  };
+
+  console.log(currentDirectory);
+
+  return (
+    <div>
+      <Header pageName="Galerij" />
+      <ReactModal modalOptions={modalOptions} />
+      <div className="content">
+        <FileDropper />
+        <div id="gallery">
+          <div id="gallery-options">
+            <Pagination size="sm">
+              <Pagination.Item onClick={() => getDirectoryData("/Media/Public/Gallery")}>Home</Pagination.Item>
+              {currentDirectory
+                .replace("/Media/Public/Gallery", "")
+                .split("/")
+                .map((dir) => {
+                  return !stringIsNullOrEmpty(dir) ? <Pagination.Item>{dir}</Pagination.Item> : null;
+                })}
+            </Pagination>
           </div>
-          <FileDropper
-            hidden={this.state.showedOption !== "fileDropper"}
-            onUploadComplete={() => this.getDirectoryData()}
-            currentDirectory={this.state.currentDirectory}
-          />
-          <DirectoryCreator
-            callback={() => this.getDirectoryData()}
-            currentDirectory={this.state.currentDirectory}
-            hidden={this.state.showedOption !== "directoryCreator" || this.state.directoryContainsFile}
-          />
-          <div tabIndex="0" onKeyUp={(e) => this.onKeyDown(e)} id="gallery" className="flex-row">
-            {this.state.galleryCards}
-          </div>
-          <div>{this.state.currentItems.length === 0 ? <EmptyFolder /> : null}</div>
-          <div
-            onTouchStart={this.handleTouchStart}
-            onTouchMove={this.handleTouchMove}
-            tabIndex="0"
-            onKeyUp={(e) => this.onKeyDown(e)}
-            hidden={this.state.fileViewer === null}
-            id="image-viewer"
-          >
-            <img alt="preview" hidden={!this.state.hideVideoView} src={this.state.fileViewer} />
-            <div hidden={this.state.hideVideoView} className="ehv-card-no-padding">
-              <ReactPlayer
-                playing={true}
-                onError={() => this.setState({ hideVideoView: true })}
-                style={{ width: "100%", height: "100%" }}
-                className="gallery-video-player"
-                url={this.state.fileViewer}
-                controls={true}
+          {currentItems[0]?.isDirectory ? (
+            currentItems.map((ci) => (
+              <Directory
+                forceUpdate={forceUpdate}
+                modalOptions={modalOptions}
+                setModalOptions={setModalOptions}
+                currentDirectory={currentDirectory}
+                setCurrentItems={setCurrentItems}
+                onClick={getDirectoryData}
+                currentItems={currentItems}
+                data={ci}
+                removeItem={removeItem}
               />
+            ))
+          ) : (
+            <div id="gallery-media" className="row">
+              {currentItems.map((ci) => (
+                <MediaItem
+                  forceUpdate={forceUpdate}
+                  modalOptions={modalOptions}
+                  setModalOptions={setModalOptions}
+                  currentDirectory={currentDirectory}
+                  onClick={onMediaItemClick}
+                  currentItems={currentItems}
+                  data={ci}
+                />
+              ))}
             </div>
-            <span onClick={() => this.setState({ fileViewer: null })} id="gallery-viewer-close">
-              &times;
-            </span>
-          </div>
+          )}
         </div>
+        <MediaViewer
+          removeItem={removeItem}
+          setModalOptions={setModalOptions}
+          modalOptions={modalOptions}
+          forceUpdate={forceUpdate}
+          mediaViewerData={mediaViewerData}
+          setMediaViewerData={setMediaViewerData}
+        />
       </div>
-    );
-  }
+    </div>
+  );
 }

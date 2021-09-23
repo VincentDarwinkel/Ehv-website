@@ -1,4 +1,4 @@
-const gatewayUrl = "http://localhost:5000/";
+const gatewayUrl = "http://192.168.1.31:5000/";
 
 const user = `${gatewayUrl}user`;
 const accountRemoval = `${gatewayUrl}account-removal`;
@@ -40,7 +40,6 @@ const actions = {
   DatepickerAvailability: datepickerAvailability,
   FileApiFiles: fileApiFiles,
   FileApiDirectory: fileApiDirectory,
-  FileApiDirectoryInfo: `${fileApiDirectory}/info`,
 };
 
 export default actions;
