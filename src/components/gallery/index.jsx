@@ -1,14 +1,15 @@
 import "./index.css";
 import Header from "components/shared/header";
-import { GetDirectoryInfo, GetFile, RemoveDirectory, RemoveFile } from "services/gallery";
+import { CreateFolder, GetDirectoryInfo, GetFile, RemoveDirectory, RemoveFile } from "services/gallery";
 import React, { useState, useEffect } from "react";
 import ReactModal from "components/shared/modal";
 import FileDropper from "components/shared/file-dropper";
 import Directory from "./directory";
 import MediaItem from "./media";
 import MediaViewer from "./media-viewer";
-import { Pagination } from "react-bootstrap";
-import { stringIsNullOrEmpty } from "services/shared/form-data-helper";
+import { Pagination, Dropdown, Form } from "react-bootstrap";
+import { getFormDataObject, stringIsNullOrEmpty } from "services/shared/form-data-helper";
+import { toast } from "react-toastify";
 
 export default function Gallery() {
   const [currentDirectory, setCurrentDirectory] = useState("/Media/Public/Gallery");
@@ -43,7 +44,7 @@ export default function Gallery() {
       setCurrentDirectory(directory);
     }
 
-    const directoryInfoResponse = await GetDirectoryInfo(directory === null ? currentDirectory : directory);
+    const directoryInfoResponse = await GetDirectoryInfo(stringIsNullOrEmpty(directory) ? currentDirectory : directory);
     if (directoryInfoResponse.status === 200) {
       const directoryInfo = await directoryInfoResponse.json();
       setCurrentItems(directoryInfo);
@@ -114,29 +115,64 @@ export default function Gallery() {
     });
   };
 
-  console.log(currentDirectory);
+  const createFolder = async (e) => {
+    e.preventDefault();
+    if (!currentItems.every((ci) => ci.isDirectory)) {
+      toast.error("Mappen kunnen niet worden aangemaakt als er bestanden aanwezig zijn");
+      return;
+    }
+
+    const formData = getFormDataObject(e);
+    const path = `${currentDirectory}/${formData.folderName}`;
+    const result = await CreateFolder(path);
+    if (result.status === 200) {
+      getDirectoryData();
+    }
+  };
+
+  const canUploadFilesInDirectory = () =>
+    currentItems.length === 0 || (!currentItems.every((ci) => ci.isDirectory) && currentDirectory !== "/Media/Public/Gallery");
+  const canCreateFoldersInDirectory = () => currentItems.length === 0 || currentItems.every((ci) => ci.isDirectory);
 
   return (
     <div>
       <Header pageName="Galerij" />
       <ReactModal modalOptions={modalOptions} />
       <div className="content">
-        <FileDropper />
         <div id="gallery">
           <div id="gallery-options">
+            <Dropdown>
+              <Dropdown.Toggle variant="success" id="dropdown-basic">
+                <i className="fas fa-plus" />
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                {canUploadFilesInDirectory() ? (
+                  <div className="dropdown-item">
+                    <FileDropper onFinished={(path) => getDirectoryData(path)} currentDirectory={currentDirectory} />
+                  </div>
+                ) : null}
+                {canCreateFoldersInDirectory() ? (
+                  <Form onSubmit={createFolder} className="dropdown-item">
+                    <i className="fas fa-folder-plus" /> Nieuwe map
+                    <input name="folderName" placeholder="Mapnaam" />
+                  </Form>
+                ) : null}
+              </Dropdown.Menu>
+            </Dropdown>
+            <hr />
+            <br />
             <Pagination size="sm">
               <Pagination.Item onClick={() => getDirectoryData("/Media/Public/Gallery")}>Home</Pagination.Item>
               {currentDirectory
                 .replace("/Media/Public/Gallery", "")
                 .split("/")
-                .map((dir) => {
-                  return !stringIsNullOrEmpty(dir) ? <Pagination.Item>{dir}</Pagination.Item> : null;
-                })}
+                .map((dir) => (!stringIsNullOrEmpty(dir) ? <Pagination.Item>{dir}</Pagination.Item> : null))}
             </Pagination>
           </div>
           {currentItems[0]?.isDirectory ? (
             currentItems.map((ci) => (
               <Directory
+                key={ci.uuid}
                 forceUpdate={forceUpdate}
                 modalOptions={modalOptions}
                 setModalOptions={setModalOptions}
@@ -152,6 +188,7 @@ export default function Gallery() {
             <div id="gallery-media" className="row">
               {currentItems.map((ci) => (
                 <MediaItem
+                  key={ci.uuid}
                   forceUpdate={forceUpdate}
                   modalOptions={modalOptions}
                   setModalOptions={setModalOptions}

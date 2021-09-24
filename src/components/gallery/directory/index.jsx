@@ -30,12 +30,12 @@ export default function Directory(props) {
   };
 
   return (
-    <div className="gallery-item-wrapper">
-      <div className="gallery-item" onClick={() => getDirectoryData(`${currentDirectory}/${ci.name}`)} key={ci.uuid}>
+    <div className="gallery-item-wrapper" key={ci.uuid}>
+      <div className="gallery-item" onClick={() => getDirectoryData(`${currentDirectory}/${ci.name}`)}>
         {<i className="fas fa-folder" style={{ marginRight: "5px" }} />} {ci.name}
       </div>
       {ci.requestingUserIsOwner ? (
-        <DropdownButton>
+        <DropdownButton title="">
           {ci.isDirectory ? (
             <div>
               <Form onSubmit={(e) => changeFolderName(e, ci.uuid)}>

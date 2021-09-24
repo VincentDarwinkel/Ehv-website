@@ -1,5 +1,5 @@
 import ApiActions from "services/shared/api/ApiActions";
-import { Delete, Get } from "./shared/api/Api";
+import { Delete, Get, Post } from "./shared/api/Api";
 import { sendRequest } from "./shared/api/api-middleware";
 
 export const GetDirectoryInfo = (path) => {
@@ -8,6 +8,10 @@ export const GetDirectoryInfo = (path) => {
 
 export const GetFile = (uuid) => {
   return sendRequest(() => Get(`${ApiActions.FileApiFiles}/${uuid}`));
+};
+
+export const CreateFolder = (path) => {
+  return sendRequest(() => Post(`${ApiActions.FileApiDirectory}?path=${path}`));
 };
 
 export const RemoveDirectory = (path) => {

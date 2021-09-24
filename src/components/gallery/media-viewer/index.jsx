@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import ReactPlayer from "react-player";
+import { stringIsNullOrEmpty } from "services/shared/form-data-helper";
 import "./index.css";
 
 export default function MediaViewer(props) {
@@ -104,11 +105,12 @@ export default function MediaViewer(props) {
   }, [data.hidden, data.currentItemsIndex]);
 
   const currentItem = data?.currentItems[data?.currentItemsIndex];
+  console.log(currentItem);
 
   return (
     <div
       id="media-viewer"
-      hidden={data?.hidden}
+      hidden={data?.hidden || stringIsNullOrEmpty(currentItem?.fileType)}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       tabIndex="0"
@@ -119,7 +121,7 @@ export default function MediaViewer(props) {
       </button>
       <div id="media-viewer-preview-wrapper">
         {data.currentItemsIndex !== -1 ? (
-          currentItem.fileType === "Image" ? (
+          currentItem?.fileType === "Image" ? (
             <img src={currentItem?.previewUrl} />
           ) : (
             <ReactPlayer className="gallery-video-wrapper" controls url={currentItem?.previewUrl} />
@@ -128,11 +130,20 @@ export default function MediaViewer(props) {
       </div>
       <div id="media-item-btn-wrapper">
         <i className="fas fa-chevron-circle-left" onClick={() => renderPreviousItem()} />
-        {data.currentItems[data.currentItemsIndex]?.requestingUserIsOwner ? (
+        {currentItem?.requestingUserIsOwner ? (
           <i
             onClick={() => {
               let mOptions = modalOptions;
-              mOptions.callback = () => removeItem(currentItem.uuid);
+              mOptions.callback = () => {
+                removeItem(currentItem.uuid);
+                if (data?.currentItems?.length === 1) {
+                  close();
+                  return;
+                }
+
+                data?.currentItemsIndex > 0 ? renderPreviousItem() : renderNextItem();
+              };
+
               mOptions.show = true;
               mOptions.description = "Weet je zeker dat je dit item wilt verwijderen?";
               setModalOptions(mOptions);
