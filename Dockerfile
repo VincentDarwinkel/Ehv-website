@@ -9,7 +9,7 @@ COPY . ./
 RUN npm run build
 
 # production environment
-FROM nginx:1.21-alpine
+FROM nginx:1.23.1-alpine
 COPY --from=0 /app/build /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
